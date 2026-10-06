@@ -6,7 +6,7 @@ Submitted by Sachin S M · Reviewer: Vaishali · Built 5 Oct 2026 with Claude Co
 | | |
 |---|---|
 | Demo link | _fill in after deploy — see [Deploy](#deploy)_ |
-| Repo / branch | _fill in after push_ · branch `main` |
+| Repo / branch | [github.com/Sachinsm7676/book-catalog-frontend](https://github.com/Sachinsm7676/book-catalog-frontend) · branch `main` |
 | Design | [Figma — DevShelf](https://www.figma.com/design/GmMGwepcgacGOKSFaf5elg/Untitled?node-id=0-1) (my own design: Home / Book catalog and Cart, Desktop 1440 and Mobile 375, with Default / Loading / Empty / Missing cover states) |
 | Training page | [TL \| AI Frontend Training](https://app.notion.com/p/divii/TL-AI-Frontend-Training-Building-Frontend-with-Claude-Code-for-Backend-Developers-3e9326b2d5fb80c0872def7b6a848d3c) |
 | Design check | [docs/design-check.md](docs/design-check.md) — WM Part A checklist, 21 designer questions with the answers used, QA decisions |
