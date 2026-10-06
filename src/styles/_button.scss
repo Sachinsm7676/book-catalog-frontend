@@ -1,0 +1,147 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+// ---- PrimeReact Button, restyled to the DevShelf spec ----
+// WM: buttons are sized by padding, not a fixed height. 12px vertical padding plus the 16px label at
+// 120% line height reaches the designed 44px, and a longer label can grow the control instead of overflowing.
+// The same classes dress the two <a> elements that look like buttons (header cart link, Browse books).
+.p-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  min-height: $control-height;
+  padding: $space-3 $space-4;
+  border: $border-width solid token("indigo-b1");
+  border-radius: $radius-md;
+  background: token("indigo-b1");
+  color: token("white-b1");
+  font-family: inherit;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background-color $transition-fast, color $transition-fast, border-color $transition-fast, filter $transition-fast;
+
+  // The label never shrinks below its text; the control grows instead
+  .p-button-label {
+    flex: 0 0 auto;
+    font-weight: inherit;
+    transition: none;
+  }
+
+  // Hover and pressed: a little darker through a filter, so no extra colour token is needed
+  &:enabled:hover,
+  &:any-link:hover {
+    background: token("indigo-b1");
+    border-color: token("indigo-b1");
+    color: token("white-b1");
+    filter: brightness($hover-dim);
+  }
+
+  &:enabled:active,
+  &:any-link:active {
+    filter: brightness($active-dim);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    opacity: $disabled-opacity;
+    cursor: not-allowed;
+  }
+}
+
+// ---- Outlined variant: white fill, indigo border and text ("Add to cart", "Apply") ----
+.p-button.p-button-outlined {
+  background: token("white-b1");
+  border-color: token("indigo-b1");
+  color: token("indigo-b1");
+
+  &:enabled:hover {
+    background: token("indigo-b2");
+    border-color: token("indigo-b1");
+    color: token("indigo-b1");
+    filter: none;
+  }
+}
+
+// ---- Category chip: pill button, 13/600; .is-active marks the selected category ----
+.chip-button.p-button {
+  min-height: $chip-height;
+  padding: $space-2 $space-4;
+  border-radius: $radius-pill;
+  border-color: token("grey-b2");
+  background: token("white-b1");
+  color: token("black-b1");
+  font-size: $font-size-xs;
+
+  &:enabled:hover {
+    background: token("grey-b3");
+    border-color: token("grey-b2");
+    color: token("black-b1");
+    filter: none;
+  }
+
+  &.is-active,
+  &.is-active:enabled:hover {
+    background: token("indigo-b1");
+    border-color: token("indigo-b1");
+    color: token("white-b1");
+  }
+
+  // Touch size on the phone layout
+  @include mq-down("sm") {
+    min-height: $chip-height-mobile;
+  }
+}
+
+// ---- Cart pill in the header: tinted background, indigo text, count badge; a link to /cart ----
+.cart-button.p-button {
+  flex: 0 0 auto;
+  background: token("indigo-b2");
+  border-color: token("indigo-b2");
+  color: token("indigo-b1");
+
+  &:hover {
+    background: token("indigo-b2");
+    border-color: token("indigo-b1");
+    color: token("indigo-b1");
+    filter: none;
+  }
+
+  // On the cart page itself the pill shows where you are
+  &[aria-current="page"] {
+    border-color: token("indigo-b1");
+  }
+}
+
+// ---- Remove (cart item): text button, trash icon + 13/600 indigo label, 44px tall for touch ----
+.cart-item-remove.p-button {
+  min-height: $control-height;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: token("indigo-b1");
+  font-size: $font-size-xs;
+
+  &:enabled:hover {
+    background: transparent;
+    border-color: transparent;
+    color: token("indigo-b1");
+    filter: none;
+    text-decoration: underline;
+  }
+}
+
+// ---- Narrowest phones (below the WM list): let the Add-to-cart label give way instead of eating the padding ----
+@include mq-down("xxs") {
+  .book-action .p-button-label {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+}

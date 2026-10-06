@@ -1,0 +1,154 @@
+// ------------------------------------------------------------------
+// Design tokens for the DevShelf book catalog.
+// Source of truth: Figma file GmMGwepcgacGOKSFaf5elg, "Home / Book catalog" frames
+// (Desktop 1440 and Mobile 375; Default, Loading, Empty, Missing cover).
+//
+// Rules applied
+//  - WM | HTML development guideline: colour variables are "colour + code" ($red-b1),
+//    class names are lowercase-with-hyphens, no hardcoded colours or sizes in components.
+//  - WM | Light/Dark Mode Color System: every [day] colour has exactly one [night]
+//    colour with the same name. Figma has no dark mode, so the night palette is an
+//    assumption (see docs/design-check.md, question Q8).
+// ------------------------------------------------------------------
+@use "sass:map";
+@use "sass:math";
+
+// ---- Colour palette [day] — values read from the frames ----------
+$colors-day: (
+  "indigo-b1": #4f46e5, // primary: brand mark, active chip, primary button, category label
+  "indigo-b2": #eef0ff, // primary tint: hero strip, cart pill, empty-state icon circle
+  "black-b1": #191a20, // headings, body text, dark icons
+  "grey-b1": #666874, // secondary text, placeholders, muted icons
+  "grey-b2": #e2e3ea, // borders and dividers
+  "grey-b3": #f7f7fc, // light surfaces: search field, footer, missing-cover box
+  "grey-b4": #e9e9f0, // skeleton base
+  "grey-b5": #d8d9e2, // skeleton accent
+  "white-b1": #ffffff, // page background, cards, text on primary
+  "amber-b1": #f59e0b, // rating star (baked into icon-star-amber.svg; kept so the palette lists every colour the frames use)
+  "red-b1": #b3261e, // error label, error border, error text (Checkout frame "Email error")
+  "shadow-b1": rgba(22, 26, 43, 0.07), // mobile card shadow
+);
+
+// ---- Colour palette [night] — same keys, dark counterparts ---------
+$colors-night: (
+  "indigo-b1": #818cf8,
+  "indigo-b2": #1e1b4b,
+  "black-b1": #f4f4f8,
+  "grey-b1": #a3a6b5,
+  "grey-b2": #2b2d3a,
+  "grey-b3": #15161c,
+  "grey-b4": #23252f,
+  "grey-b5": #2f313d,
+  "white-b1": #0e0f14,
+  "amber-b1": #fbbf24,
+  "red-b1": #f2b8b5,
+  "shadow-b1": rgba(0, 0, 0, 0.4),
+);
+
+// Read a colour token as a CSS custom property, so day/night can switch at runtime
+// without recompiling: background: token("indigo-b1");
+@function token($name) {
+  @if not map.has-key($colors-day, $name) {
+    @error "Unknown colour token #{$name}. Add it to $colors-day AND $colors-night.";
+  }
+
+  @return var(--#{$name});
+}
+
+// ---- Typography (Inter is loaded with next/font and exposed as --font-inter) ----
+$font-family-base: var(--font-inter), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+$font-size-xs: 13px;
+$font-size-md: 16px;
+$font-size-lg: 20px;
+$font-size-xl: 24px;
+$font-size-2xl: 32px;
+$font-weight-regular: 400;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$line-height-normal: normal; // Figma "Auto"
+$line-height-tight: 120%; // hero title, card title
+$line-height-base: 150%; // hero text
+
+// ---- Spacing scale (every gap in the frames is a multiple of 8, plus 4 for fine steps) ----
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-6: 24px;
+$space-8: 32px;
+$space-12: 48px;
+
+// ---- Radius ----
+$radius-md: 8px;
+$radius-pill: 999px;
+
+// ---- Component sizes ----
+$control-height: 44px; // buttons, inputs, sort control, pagination squares
+$chip-height: 40px; // category chip, desktop
+$chip-height-mobile: 44px; // category chip, mobile (touch size)
+$badge-size: 24px; // cart item count
+$brand-mark-size: 32px;
+$empty-icon-size: 72px;
+$icon-xs: 16px; // lock in the secure note
+$icon-sm: 18px;
+$icon-md: 20px;
+$icon-lg: 22px;
+$icon-xl: 32px;
+$border-width: 1px;
+$border-width-strong: 2px; // invalid field border (Checkout frame)
+$focus-ring-width: 2px;
+$focus-ring-offset: 2px;
+
+// ---- Layout ----
+$container-width: 1200px; // content column on the 1440 frame
+$gutter: 16px; // side padding on the 375 frame
+$search-width: 520px;
+$card-width: 276px;
+$cover-ratio: math.div(2, 3); // 276 x 414 desktop, 112 x 168 mobile
+$cover-width-mobile: 112px;
+$grid-gap: 32px;
+$list-gap: 16px;
+$empty-min-height: 320px;
+$empty-text-width: 420px;
+$empty-text-width-mobile: 280px;
+// Skeleton placeholders (widths from the Loading frame; heights match the text they stand in for)
+$skeleton-category-width: 80px;
+$skeleton-title-end-width: 200px;
+$skeleton-title-end-width-mobile: 120px;
+$skeleton-author-width: 144px;
+$skeleton-price-width: 88px;
+$results-count-skeleton-width: 64px;
+$shadow-card: 0 6px 18px 0 token("shadow-b1");
+
+// ---- Cart screen (Figma "Cart" frames) ----
+$cart-summary-width: 384px; // order summary column at 1440
+$cart-cover-width: 96px; // 96 x 144 cover in a cart item
+$cart-cover-width-mobile: 80px; // 80 x 120 at 375
+$cart-empty-min-height: 620px;
+$cart-empty-min-height-mobile: 500px;
+$cart-empty-text-width: 440px;
+$cart-empty-text-width-mobile: 300px;
+$illustration-width: 200px; // empty-cart illustration
+$illustration-height: 160px;
+
+// ---- Breakpoints — WM | HTML development guideline media query list ----
+$breakpoints: (
+  "xxl": 1920px,
+  "xl": 1600px,
+  "lg": 1366px,
+  "md-lg": 1280px,
+  "md": 1024px,
+  "sm-md": 991px,
+  "sm": 768px,
+  "xs-sm": 640px,
+  "xs": 480px,
+  "xxs": 375px,
+);
+
+// ---- Motion and emphasis ----
+$transition-fast: 150ms ease;
+$motion-none: 0.01ms; // what animations collapse to under prefers-reduced-motion
+$busy-opacity: 0.6;
+$disabled-opacity: 0.55;
+$hover-dim: 0.94; // brightness of a filled button on hover
+$active-dim: 0.88; // brightness of a filled button while pressed

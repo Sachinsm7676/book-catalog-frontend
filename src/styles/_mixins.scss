@@ -1,0 +1,51 @@
+@use "sass:map";
+@use "variables" as *;
+
+// Styles for viewports BELOW a WM breakpoint: @include mq-down("sm") => max-width: 767px
+@mixin mq-down($key) {
+  $width: map.get($breakpoints, $key);
+
+  @if not $width {
+    @error "Unknown breakpoint #{$key}. Use a key of $breakpoints.";
+  }
+
+  @media (max-width: ($width - 1px)) {
+    @content;
+  }
+}
+
+// Styles for viewports AT OR ABOVE a WM breakpoint
+@mixin mq-up($key) {
+  $width: map.get($breakpoints, $key);
+
+  @if not $width {
+    @error "Unknown breakpoint #{$key}. Use a key of $breakpoints.";
+  }
+
+  @media (min-width: $width) {
+    @content;
+  }
+}
+
+// Centered content column: 1200px wide on desktop, 16px gutters on smaller screens
+@mixin container {
+  width: 100%;
+  max-width: calc(#{$container-width} + #{$gutter * 2});
+  margin-inline: auto;
+  padding-inline: $gutter;
+}
+
+// Clamp text to N lines with an ellipsis
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  overflow: hidden;
+}
+
+// Keyboard focus ring in the brand colour
+@mixin focus-ring {
+  outline: $focus-ring-width solid token("indigo-b1");
+  outline-offset: $focus-ring-offset;
+  box-shadow: none;
+}

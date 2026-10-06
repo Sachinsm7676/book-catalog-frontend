@@ -1,0 +1,360 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+// ---- Layout helpers ----
+// Page content area between header and footer
+.site-main {
+  flex: 1 0 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+// ---- Cart count badge (PrimeReact Badge): 24px indigo circle, 13/700 white ----
+.p-badge.cart-count {
+  min-width: $badge-size;
+  height: $badge-size;
+  padding: 0 $space-1;
+  border-radius: $radius-pill;
+  background: token("indigo-b1");
+  color: token("white-b1");
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  line-height: $badge-size;
+}
+
+// ---- Skeleton (PrimeReact Skeleton): grey-b4 blocks, grey-b5 for the accented lines ----
+.p-skeleton {
+  max-width: 100%;
+  border-radius: $radius-md;
+  background: token("grey-b4");
+}
+
+.p-skeleton.skeleton-accent {
+  background: token("grey-b5");
+}
+
+// ---- Book card: column on the grid, a bordered row with a shadow on the phone layout ----
+.book-card {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  width: 100%;
+  min-width: 0;
+  border-radius: $radius-md;
+
+  @include mq-down("sm") {
+    flex-direction: row;
+    align-items: flex-start;
+    padding: $space-4;
+    border: $border-width solid token("grey-b2");
+    background: token("white-b1");
+    box-shadow: $shadow-card;
+  }
+}
+
+// Cover box: 2:3, full card width on the grid, 112px on the phone row
+.book-cover {
+  position: relative;
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: $cover-ratio;
+  border-radius: $radius-md;
+  overflow: hidden;
+
+  @include mq-down("sm") {
+    width: $cover-width-mobile;
+  }
+}
+
+// Cart variant of the cover box: 96px, 80px on the phone layout
+.book-cover.book-cover-cart {
+  width: $cart-cover-width;
+
+  @include mq-down("sm") {
+    width: $cart-cover-width-mobile;
+  }
+}
+
+// The image fills the box
+.book-cover-image {
+  object-fit: cover;
+}
+
+// "Cover unavailable" placeholder: tinted box, book icon, 13px grey text
+.book-cover-missing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  width: 100%;
+  height: 100%;
+  padding: $space-3;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("grey-b3");
+  text-align: center;
+}
+
+.book-cover-missing-text {
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+}
+
+// Text column of the card
+.book-info {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $space-2;
+  min-width: 0;
+}
+
+// Category label: 13/600 indigo
+.book-category {
+  color: token("indigo-b1");
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+}
+
+// Title: 20/600, at most two lines
+.book-title {
+  @include line-clamp(2);
+
+  color: token("black-b1");
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+  overflow-wrap: anywhere;
+}
+
+// "by Author": 13px grey
+.book-author {
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+}
+
+// Rating row: star, average, count
+.book-rating {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.book-rating-value {
+  color: token("black-b1");
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+}
+
+.book-rating-count {
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+}
+
+// Price: 20/700
+.book-price {
+  color: token("black-b1");
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+// ---- Book card skeleton: mirrors the card (cover, five lines, action) ----
+.book-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  width: 100%;
+  min-width: 0;
+  border-radius: $radius-md;
+
+  @include mq-down("sm") {
+    flex-direction: row;
+    align-items: flex-start;
+    padding: $space-4;
+    border: $border-width solid token("grey-b2");
+  }
+}
+
+// Wrapper owns the size; the Skeleton inside fills it (its inline width would otherwise win over this rule)
+.skeleton-cover {
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: $cover-ratio;
+
+  @include mq-down("sm") {
+    width: $cover-width-mobile;
+  }
+}
+
+// Text column of the skeleton
+.skeleton-info {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: $space-4;
+  min-width: 0;
+}
+
+// Each line is a sized wrapper around a Skeleton that fills it (same inline-width reason as the cover)
+.skeleton-line {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+// Category line: 80 x 13
+.skeleton-line-category {
+  width: $skeleton-category-width;
+  height: $font-size-xs;
+}
+
+// Title first line: full width x 20
+.skeleton-line-title {
+  height: $font-size-lg;
+}
+
+// Title second line: 200 x 20, 120 on the phone layout
+.skeleton-line-title-end {
+  width: $skeleton-title-end-width;
+  height: $font-size-lg;
+
+  @include mq-down("sm") {
+    width: $skeleton-title-end-width-mobile;
+  }
+}
+
+// Author line: 144 x 13
+.skeleton-line-author {
+  width: $skeleton-author-width;
+  height: $font-size-xs;
+}
+
+// Price line: 88 x 24
+.skeleton-line-price {
+  width: $skeleton-price-width;
+  height: $font-size-xl;
+}
+
+// Button placeholder: full width x 44
+.skeleton-line-action {
+  height: $control-height;
+}
+
+// ---- Empty / error / not-found state: icon circle, title, text, action ----
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-4;
+  width: 100%;
+  min-height: $empty-min-height;
+  text-align: center;
+}
+
+// 72px tinted circle around the icon
+.empty-state-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $empty-icon-size;
+  height: $empty-icon-size;
+  border-radius: $radius-pill;
+  background: token("indigo-b2");
+}
+
+// Title: 24/700
+.empty-state-title {
+  color: token("black-b1");
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+// Text: 16px grey, 420px wide on desktop, 280px on the phone layout
+.empty-state-text {
+  max-width: $empty-text-width;
+  color: token("grey-b1");
+  font-size: $font-size-md;
+
+  @include mq-down("sm") {
+    max-width: $empty-text-width-mobile;
+  }
+}
+
+// ---- Pagination (PrimeReact Paginator with custom templates): 44px squares with 8px gaps ----
+.pagination-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+// The paginator itself; PrimeReact wraps the page links in .p-paginator-pages, which needs the same gap
+.pagination.p-paginator {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: $space-2;
+  padding: 0;
+  border: 0;
+  background: transparent;
+
+  .p-paginator-pages {
+    display: inline-flex;
+    gap: $space-2;
+  }
+}
+
+// Page numbers and the previous/next controls
+.pagination-page,
+.pagination-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $control-height;
+  height: $control-height;
+  padding: 0;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("white-b1");
+  color: token("black-b1");
+  font: inherit;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background-color $transition-fast, border-color $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: token("grey-b3");
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  // The chevron colour carries the disabled look (grey asset), so no extra fading
+  &:disabled {
+    cursor: default;
+  }
+}
+
+// Current page: indigo square with white number
+.pagination-page.is-active,
+.pagination-page.is-active:hover {
+  border-color: token("indigo-b1");
+  background: token("indigo-b1");
+  color: token("white-b1");
+}
+
+// ---- Toast (PrimeReact Toast): kept inside the viewport with the page gutter on narrow screens ----
+.p-toast {
+  --toast-indent: #{$gutter * 2};
+
+  right: $gutter;
+}
+
+.p-toast .p-toast-message {
+  border-radius: $radius-md;
+  font-family: $font-family-base;
+}

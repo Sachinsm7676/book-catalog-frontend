@@ -1,0 +1,76 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+// ---- Site header: brand | search | cart on one row; under 768 the search drops to a full-width second row ----
+.site-header {
+  width: 100%;
+  border-bottom: $border-width solid token("grey-b2");
+  background: token("white-b1");
+}
+
+// 1200px column with 16px vertical padding; wraps on the phone layout
+.site-header-container {
+  @include container;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  padding-block: $space-4;
+
+  @include mq-down("sm") {
+    flex-wrap: wrap;
+  }
+}
+
+// Brand: 32px indigo mark + "DevShelf" 20/700, links home
+.brand {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: $space-2;
+  color: inherit;
+  text-decoration: none;
+
+  &:focus-visible {
+    @include focus-ring;
+
+    border-radius: $radius-md;
+  }
+}
+
+.brand-mark {
+  width: $brand-mark-size;
+  height: $brand-mark-size;
+  border-radius: $radius-md;
+  background: token("indigo-b1");
+}
+
+.brand-name {
+  color: token("black-b1");
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  white-space: nowrap;
+}
+
+// Search slot: 520px at most on desktop, placed between brand and cart with `order` so the DOM can keep
+// brand, cart, search; on the phone layout DOM order equals visual order, so keyboard focus follows the eye
+.header-search {
+  flex: 0 1 $search-width;
+  order: 2;
+  min-width: 0;
+
+  @include mq-down("sm") {
+    flex: 1 1 100%;
+    order: 0;
+  }
+}
+
+// Cart pill: last on desktop, first row on the phone layout
+.header-cart {
+  order: 3;
+
+  @include mq-down("sm") {
+    order: 0;
+  }
+}

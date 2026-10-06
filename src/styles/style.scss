@@ -1,0 +1,143 @@
+// Global stylesheet, imported once in src/app/layout.tsx.
+// Order matters: tokens and mixins first, then PrimeReact overrides, then layout and page partials.
+@use "variables" as *;
+@use "mixins" as *;
+@use "icon";
+@use "button";
+@use "form-element";
+@use "component";
+@use "header";
+@use "footer";
+@use "pages/book-catalog";
+@use "pages/cart";
+
+// ---- Colour tokens as CSS custom properties: [day] by default, [night] when <html data-theme="dark"> ----
+:root {
+  @each $name, $value in $colors-day {
+    --#{$name}: #{$value};
+  }
+
+  color-scheme: light;
+
+  // PrimeReact's theme sets --font-family to its bundled "Inter var". Pointing it at the next/font
+  // Inter keeps one font family on the page and stops the second font file download.
+  --font-family: #{$font-family-base};
+}
+
+:root[data-theme="dark"] {
+  @each $name, $value in $colors-night {
+    --#{$name}: #{$value};
+  }
+
+  color-scheme: dark;
+}
+
+// ---- Base ----
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: token("white-b1");
+  color: token("black-b1");
+  font-family: $font-family-base;
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+// ---- Utilities ----
+// Text that only assistive technology should get (rating sentences, headings that structure the page but are not drawn)
+.visually-hidden {
+  position: absolute;
+  width: $border-width;
+  height: $border-width;
+  margin: -$border-width;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// ---- PrimeReact structural rules, shipped in static CSS ----
+// PrimeReact 10 injects its component CSS at runtime, after hydration. Until then the server HTML showed the
+// Dropdown's accessibility input and native select as plain controls, which widened the page at 375px for a
+// few seconds. These rules reproduce the structural parts so the first paint is already right.
+.p-hidden-accessible {
+  position: absolute;
+  width: $border-width;
+  height: $border-width;
+  margin: -$border-width;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.p-hidden-accessible input,
+.p-hidden-accessible select {
+  transform: scale(0);
+}
+
+.p-dropdown {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.p-dropdown-trigger {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.p-badge {
+  display: inline-block;
+  text-align: center;
+}
+
+.p-skeleton {
+  position: relative;
+  overflow: hidden;
+}
+
+// ---- Reduced motion: no shimmer or transitions for people who ask for none (also makes screenshots deterministic) ----
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: $motion-none !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: $motion-none !important;
+  }
+}

@@ -1,0 +1,129 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// ---- Catalog page column: 48px rhythm on desktop, 32px vertical padding on mobile ----
+.catalog-page {
+  @include container;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-12;
+  padding-block: $space-12;
+
+  @include mq-down("sm") {
+    padding-block: $space-8;
+  }
+}
+
+// Hero strip + controls, 32px apart
+.catalog-intro {
+  display: flex;
+  flex-direction: column;
+  gap: $space-8;
+}
+
+// ---- Hero strip: tinted panel, 48px padding on desktop, 32/24 on the phone layout ----
+.hero-strip {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-12;
+  border-radius: $radius-md;
+  background: token("indigo-b2");
+
+  @include mq-down("sm") {
+    padding: $space-8 $space-6;
+  }
+}
+
+// Hero title: 32/700 at 120%
+.hero-title {
+  color: token("black-b1");
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  overflow-wrap: anywhere;
+}
+
+// Hero text: 16px grey at 150%
+.hero-text {
+  color: token("grey-b1");
+  font-size: $font-size-md;
+  line-height: $line-height-base;
+}
+
+// ---- Controls: category chips, then results count + sort ----
+.catalog-controls {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+// Chips wrap with 8px gaps
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// "24 books" on the left, sort control on the right
+.results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+}
+
+.results-count {
+  color: token("grey-b1");
+  font-size: $font-size-md;
+  white-space: nowrap;
+}
+
+// Sized wrapper for the Skeleton shown while the first page loads
+.results-count-skeleton {
+  display: block;
+  width: $results-count-skeleton-width;
+  height: $font-size-md;
+}
+
+// ---- Grid: four 276px cards on the 1200 column, fewer columns as it narrows, one list under 768 ----
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(#{$card-width}, 100%), 1fr));
+  gap: $grid-gap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transition: opacity $transition-fast;
+
+  // While the next page or filter loads, the current list stays visible but dimmed
+  &.is-busy {
+    opacity: $busy-opacity;
+  }
+
+  @include mq-down("sm") {
+    grid-template-columns: minmax(0, 1fr);
+    gap: $list-gap;
+  }
+}
+
+.book-grid-item {
+  min-width: 0;
+}
+
+// Results region: skeleton / error / empty / grid + pagination. It receives focus programmatically after
+// "Clear filters" and "Try again" (so keyboard users are not dropped at the top of the page); no ring needed.
+.catalog-status {
+  display: flex;
+  flex-direction: column;
+  gap: $space-12;
+  width: 100%;
+
+  &:focus {
+    outline: none;
+  }
+}

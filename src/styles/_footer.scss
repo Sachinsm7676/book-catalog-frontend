@@ -1,0 +1,74 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+// ---- Site footer: brand left, links right; stacked under 768 ----
+.site-footer {
+  width: 100%;
+  padding-block: $space-8;
+  background: token("grey-b3");
+}
+
+// 1200px column, row on desktop, column on the phone layout
+.site-footer-container {
+  @include container;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-6;
+
+  @include mq-down("sm") {
+    flex-direction: column;
+  }
+}
+
+// Brand name + tagline
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.footer-brand-name {
+  color: token("black-b1");
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+.footer-tagline {
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+}
+
+// Help · License · Privacy, 32px apart
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-8;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// 13px grey links; on the phone layout they get a 44px tall hit area without changing the text size
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+  text-decoration: none;
+
+  &:hover {
+    color: token("black-b1");
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+
+    border-radius: $radius-md;
+  }
+
+  @include mq-down("sm") {
+    min-height: $control-height;
+  }
+}

@@ -1,0 +1,213 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+// ---- Search field: the icon and the PrimeReact InputText share one 44px tinted box ----
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  height: $control-height;
+  padding: 0 $space-4;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("grey-b3");
+  cursor: text;
+
+  // Keyboard focus gets the same 2px ring as every other control (the input itself drops its own outline)
+  &:focus-within {
+    @include focus-ring;
+
+    border-color: token("indigo-b1");
+  }
+}
+
+// The input inside the box: borderless, transparent, 16px text with a grey placeholder
+.search-field-input.p-inputtext {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: token("black-b1");
+  font-family: inherit;
+  font-size: $font-size-md;
+
+  &::placeholder {
+    color: token("grey-b1");
+    opacity: 1;
+  }
+
+  &:enabled:focus,
+  &:enabled:hover {
+    border: 0;
+    box-shadow: none;
+    outline: none;
+  }
+}
+
+// ---- Sort control: PrimeReact Dropdown in a 44px bordered box, "Sort by" prefix on desktop ----
+.sort-dropdown.p-dropdown {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  min-height: $control-height;
+  padding: 0 $space-4;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("white-b1");
+  box-shadow: none;
+
+  &:not(.p-disabled):hover {
+    border-color: token("grey-b1");
+  }
+
+  &:not(.p-disabled).p-focus {
+    @include focus-ring;
+
+    border-color: token("grey-b2");
+  }
+
+  // The value area holds our template: "Sort by" + the selected label
+  .p-dropdown-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: token("black-b1");
+    font-family: inherit;
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-normal;
+  }
+
+  // Chevron slot
+  .p-dropdown-trigger {
+    width: auto;
+    color: token("grey-b1");
+  }
+}
+
+// "Sort by" prefix: 13px grey on desktop, hidden on the phone layout as drawn
+.sort-label {
+  margin-right: $space-2;
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+  font-weight: $font-weight-regular;
+
+  @include mq-down("sm") {
+    display: none;
+  }
+}
+
+// Open panel of the sort control
+.sort-panel.p-dropdown-panel {
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("white-b1");
+  box-shadow: $shadow-card;
+  font-family: $font-family-base;
+
+  .p-dropdown-items {
+    padding: $space-2 0;
+  }
+
+  .p-dropdown-item {
+    padding: $space-3 $space-4;
+    color: token("black-b1");
+    font-size: $font-size-md;
+
+    &.p-highlight {
+      background: token("indigo-b2");
+      color: token("indigo-b1");
+    }
+
+    &:not(.p-highlight):not(.p-disabled):hover {
+      background: token("grey-b3");
+      color: token("black-b1");
+    }
+  }
+}
+
+// ---- Discount code (cart): label, PrimeReact InputText, Apply button, helper line ----
+// Field and button sit on one row with the button aligned to the field, the label above the field.
+.discount-code {
+  display: flex;
+  align-items: flex-end;
+  gap: $space-2;
+  width: 100%;
+}
+
+.discount-code-field {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: $space-2;
+  min-width: 0;
+}
+
+.discount-code-label {
+  color: token("black-b1");
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+}
+
+.discount-code-input.p-inputtext {
+  width: 100%;
+  min-height: $control-height;
+  padding: $space-2 $space-4;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("white-b1");
+  box-shadow: none;
+  color: token("black-b1");
+  font-family: inherit;
+  font-size: $font-size-md;
+
+  &:enabled:hover {
+    border-color: token("grey-b1");
+  }
+
+  &:enabled:focus {
+    @include focus-ring;
+
+    border-color: token("grey-b2");
+  }
+}
+
+// Invalid code: red label and a 2px red border, the Checkout frame's error pattern
+.discount-code.is-invalid {
+  .discount-code-label {
+    color: token("red-b1");
+  }
+
+  .discount-code-input.p-inputtext {
+    border: $border-width-strong solid token("red-b1");
+  }
+}
+
+// Helper line under the row: red for errors, indigo once a code is applied
+.discount-code-help {
+  width: 100%;
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+
+  &.is-error {
+    color: token("red-b1");
+  }
+
+  &.is-success {
+    color: token("indigo-b1");
+  }
+}
+
+// Field row + helper line stacked
+.discount-code-block {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  width: 100%;
+}

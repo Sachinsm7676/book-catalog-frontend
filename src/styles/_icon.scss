@@ -1,0 +1,13 @@
+@use "variables" as *;
+
+// Icons are the SVGs exported from the Figma frames, stored in /public/assets/icons
+// as icon-<name>-<colour>.svg (WM naming) and rendered by <Icon /> at the frame's pixel size.
+.icon {
+  display: block;
+  flex: 0 0 auto;
+}
+
+// Mirror a chevron so one asset serves both directions in the states Figma did not draw
+.icon-flip-x {
+  transform: scaleX(-1);
+}

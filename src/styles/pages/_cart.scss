@@ -1,0 +1,222 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// ---- Cart page column: 48px vertical padding on desktop, 32px on the phone layout, 32px between blocks ----
+.cart-page {
+  @include container;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-8;
+  padding-block: $space-12;
+
+  @include mq-down("sm") {
+    padding-block: $space-8;
+  }
+}
+
+// Section heading: "Your cart" + the count line
+.cart-heading {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.cart-title {
+  color: token("black-b1");
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.cart-subtitle {
+  color: token("grey-b1");
+  font-size: $font-size-md;
+  line-height: $line-height-base;
+}
+
+// ---- Layout: items column + 384px summary from 1024px up, stacked below (Figma draws 1440 and 375 only) ----
+.cart-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-8;
+
+  @include mq-down("md") {
+    flex-direction: column;
+  }
+}
+
+// List of cart items, 16px apart
+.cart-items {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: $space-4;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// One book in the cart: bordered white card, cover left, details right
+.cart-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-4;
+  padding: $space-4;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("white-b1");
+}
+
+// Title, author, formats, price, Remove
+.cart-item-details {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $space-2;
+  min-width: 0;
+}
+
+// Title: 20/600, at most two lines
+.cart-item-title {
+  @include line-clamp(2);
+
+  color: token("black-b1");
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+  overflow-wrap: anywhere;
+}
+
+// "by Author" and "PDF · EPUB": 13px grey
+.cart-item-meta {
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+}
+
+// Price: 20/700
+.cart-item-price {
+  color: token("black-b1");
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+// ---- Order summary: tinted card with a shadow, 24px padding, 16px between rows ----
+.order-summary {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $space-4;
+  width: $cart-summary-width;
+  padding: $space-6;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("grey-b3");
+  box-shadow: $shadow-card;
+
+  @include mq-down("md") {
+    width: 100%;
+  }
+}
+
+// "Order summary": 24/700
+.order-summary-title {
+  color: token("black-b1");
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+// 1px rule between groups of rows
+.summary-divider {
+  width: 100%;
+  height: $border-width;
+  margin: 0;
+  border: 0;
+  background: token("grey-b2");
+}
+
+// Label/value rows (Subtotal, Discount, Tax, Total)
+.summary-rows {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  width: 100%;
+  margin: 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: $space-4;
+  color: token("black-b1");
+  font-size: $font-size-md;
+
+  dd {
+    margin: 0;
+  }
+}
+
+// Values are semibold; the total row is 20/700 on both sides
+.summary-row-value {
+  font-weight: $font-weight-semibold;
+}
+
+.summary-row-total {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+// Primary action keeps its content width (not stretched across the card)
+.checkout-button.p-button {
+  align-self: flex-start;
+}
+
+// "Secure checkout · Instant downloads" with the lock icon
+.checkout-note {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+}
+
+// ---- Empty cart: illustration, title, text, Browse books; 620px tall on desktop, 500px on the phone layout ----
+.cart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-4;
+  width: 100%;
+  min-height: $cart-empty-min-height;
+  text-align: center;
+
+  @include mq-down("sm") {
+    min-height: $cart-empty-min-height-mobile;
+  }
+}
+
+.cart-empty-illustration {
+  width: $illustration-width;
+  height: $illustration-height;
+}
+
+.cart-empty-title {
+  color: token("black-b1");
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+// 16px grey, 440px wide on desktop, 300px on the phone layout
+.cart-empty-text {
+  max-width: $cart-empty-text-width;
+  color: token("grey-b1");
+  font-size: $font-size-md;
+
+  @include mq-down("sm") {
+    max-width: $cart-empty-text-width-mobile;
+  }
+}
