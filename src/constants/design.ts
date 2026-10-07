@@ -23,6 +23,18 @@ export const CATALOG_COVER_SIZES = `(max-width: ${BREAKPOINT.sm - 1}px) ${COVER_
 /** next/image `sizes` for cart covers */
 export const CART_COVER_SIZES = `(max-width: ${BREAKPOINT.sm - 1}px) ${CART_COVER_WIDTH.mobile}px, ${CART_COVER_WIDTH.desktop}px`;
 
+/** Manage-table thumbnail width: $thumb-cover-width */
+export const THUMB_COVER_WIDTH = 48;
+
+/** Details-screen cover widths: $details-cover-width-mobile and $details-cover-width */
+export const DETAILS_COVER_WIDTH = { mobile: 160, desktop: 240 } as const;
+
+/** next/image `sizes` for the manage-table thumbnail */
+export const THUMB_COVER_SIZES = `${THUMB_COVER_WIDTH}px`;
+
+/** next/image `sizes` for the details-screen cover */
+export const DETAILS_COVER_SIZES = `(max-width: ${BREAKPOINT.sm - 1}px) ${DETAILS_COVER_WIDTH.mobile}px, ${DETAILS_COVER_WIDTH.desktop}px`;
+
 /** Cards in the first grid row on the full 1200px column; their covers load eagerly */
 export const FIRST_ROW_COUNT = 4;
 

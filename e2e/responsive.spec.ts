@@ -2,11 +2,13 @@ import { expect, test, type Page } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { CART_STORAGE_KEY } from "../src/constants/cart";
+import { EMPTY_PAGE, SEEDED, hangBooksApi, stubBooksList } from "./helpers";
 
-// WM | HTML development guideline: media query breakpoints to check
-const WIDTHS = [1920, 1600, 1366, 1280, 1024, 991, 768, 640, 480, 375];
-// The four widths the training marks as mandatory; secondary states are captured at these only
-const KEY_WIDTHS = [1920, 1366, 768, 375];
+// WM | HTML development guideline: media query breakpoints to check, plus 1440 (the Figma desktop frame width,
+// which the design review compares side by side with the build)
+const WIDTHS = [1920, 1600, 1440, 1366, 1280, 1024, 991, 768, 640, 480, 375];
+// The four widths the training marks as mandatory, plus 1440 for the design review; secondary states are captured at these only
+const KEY_WIDTHS = [1920, 1440, 1366, 768, 375];
 const VIEWPORT_HEIGHT = 1000;
 
 interface ScreenState {
@@ -15,9 +17,13 @@ interface ScreenState {
   url: string;
   /** captured at every WM width (true) or only at the key widths */
   everyWidth: boolean;
-  /** runs before navigation, e.g. to seed storage */
+  /** runs before navigation, e.g. to seed storage or stub the API */
   prepare?: (page: Page) => Promise<void>;
   ready: (page: Page) => Promise<void>;
+  /** runs after the page is ready, e.g. to open a dialog or submit an empty form */
+  act?: (page: Page) => Promise<void>;
+  /** capture the viewport only (a modal dialog is fixed to the viewport; a full-page shot would misplace it) */
+  viewportOnly?: boolean;
 }
 
 const emptyCart = async (page: Page) => {
@@ -34,6 +40,36 @@ const STATES: ScreenState[] = [
   { name: "catalog-missing-cover", url: "/books/list?state=missing-cover", everyWidth: false, ready: (page) => expect(page.getByTestId("book-cover-missing")).toHaveCount(1) },
   { name: "cart-filled", url: "/cart", everyWidth: true, ready: (page) => expect(page.getByTestId("cart-item")).toHaveCount(2) },
   { name: "cart-empty", url: "/cart", everyWidth: false, prepare: emptyCart, ready: (page) => expect(page.getByTestId("cart-empty")).toBeVisible() },
+  // ---- Homework 2: manage books ----
+  { name: "admin-list-filled", url: "/admin/books/list?sort=title", everyWidth: true, ready: (page) => expect(page.getByTestId("admin-book-row")).toHaveCount(10) },
+  { name: "admin-list-loading", url: "/admin/books/list", everyWidth: false, prepare: hangBooksApi, ready: (page) => expect(page.getByTestId("admin-loading")).toBeVisible() },
+  { name: "admin-list-empty", url: "/admin/books/list", everyWidth: false, prepare: (page) => stubBooksList(page, EMPTY_PAGE), ready: (page) => expect(page.getByTestId("admin-empty")).toBeVisible() },
+  { name: "admin-list-no-results", url: "/admin/books/list?q=zzzz-no-such-book", everyWidth: false, ready: (page) => expect(page.getByTestId("admin-no-results")).toBeVisible() },
+  { name: "admin-create", url: "/admin/books/create", everyWidth: true, ready: (page) => expect(page.getByTestId("submit-book")).toBeVisible() },
+  {
+    name: "admin-create-errors",
+    url: "/admin/books/create",
+    everyWidth: false,
+    ready: (page) => expect(page.getByTestId("submit-book")).toBeVisible(),
+    act: async (page) => {
+      await page.getByTestId("submit-book").click();
+      await expect(page.getByTestId("form-banner")).toBeVisible();
+    },
+  },
+  { name: "admin-edit", url: `/admin/books/edit/${SEEDED.id}`, everyWidth: false, ready: (page) => expect(page.locator("#book-title")).toHaveValue(SEEDED.title) },
+  { name: "admin-details", url: `/admin/books/details/${SEEDED.id}`, everyWidth: true, ready: (page) => expect(page.getByTestId("book-details")).toBeVisible() },
+  {
+    name: "admin-delete-dialog",
+    url: `/admin/books/details/${SEEDED.id}`,
+    everyWidth: false,
+    viewportOnly: true,
+    ready: (page) => expect(page.getByTestId("book-details")).toBeVisible(),
+    act: async (page) => {
+      await page.getByTestId("delete-book").click();
+      await expect(page.getByRole("dialog", { name: "Delete this book?" })).toBeVisible();
+    },
+  },
+  { name: "admin-not-found", url: "/admin/books/details/no-such-book", everyWidth: false, ready: (page) => expect(page.getByTestId("book-not-found")).toBeVisible() },
 ];
 
 const OUT_DIR = path.join(process.cwd(), "docs", "screenshots");
@@ -80,6 +116,7 @@ for (const width of WIDTHS) {
       await page.goto(state.url);
       await state.ready(page);
       await loadWholePage(page);
+      if (state.act) await state.act(page);
 
       const { scrollWidth, clientWidth } = await page.evaluate(() => ({
         scrollWidth: document.documentElement.scrollWidth,
@@ -91,7 +128,7 @@ for (const width of WIDTHS) {
 
       // Hide the Next.js dev-tools badge: it is not part of the page
       await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
-      await page.screenshot({ path: path.join(OUT_DIR, `${state.name}-${width}.png`), fullPage: true, animations: "disabled" });
+      await page.screenshot({ path: path.join(OUT_DIR, `${state.name}-${width}.png`), fullPage: !state.viewportOnly, animations: "disabled" });
     });
   }
 }

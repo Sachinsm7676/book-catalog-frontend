@@ -89,10 +89,10 @@ test.describe("Cart", () => {
     await expect(page.getByTestId("summary-discount")).toContainText("Discount (DEV10)");
   });
 
-  test("Proceed to checkout explains that checkout is Homework 2", async ({ page }) => {
+  test("Proceed to checkout explains that checkout is not part of the demo", async ({ page }) => {
     await page.goto(CART);
     await page.getByRole("button", { name: "Proceed to checkout" }).click();
-    await expect(page.getByText("Checkout opens in Homework 2")).toBeVisible();
+    await expect(page.getByText("Checkout is not part of this demo")).toBeVisible();
   });
 
   test("the cart survives a reload and does not reseed", async ({ page }) => {

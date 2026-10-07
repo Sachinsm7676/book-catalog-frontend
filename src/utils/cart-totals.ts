@@ -19,7 +19,8 @@ export function lookupDiscountRate(code: string | null): number | null {
  * 999 + 1,299 = 2,298 · tax 414 · total 2,712, matching the Figma frame.
  */
 export function calculateCartTotals(items: readonly Book[], discountRate = 0): CartTotals {
-  const subtotal = items.reduce((sum, book) => sum + book.priceInr, 0);
+  // Prices can carry paise: add in paise so 0.1 + 0.2 style float noise never reaches the screen
+  const subtotal = items.reduce((sum, book) => sum + Math.round(book.priceInr * 100), 0) / 100;
   const discount = Math.round(subtotal * discountRate);
   const taxable = subtotal - discount;
   const tax = Math.round(taxable * GST_RATE);

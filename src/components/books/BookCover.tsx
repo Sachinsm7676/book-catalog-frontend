@@ -13,8 +13,11 @@ interface BookCoverProps {
   priority?: boolean;
   /** next/image sizes hint; the catalog default fits the grid, the cart passes its own */
   sizes?: string;
-  /** cart covers are 96px (80px on the phone layout) instead of the card width */
-  variant?: "catalog" | "cart";
+  /**
+   * catalog: card width · cart: 96px (80px on the phone layout) · thumb: 48px in the manage table ·
+   * details: 240px on the details screen (160px on the phone layout)
+   */
+  variant?: "catalog" | "cart" | "thumb" | "details";
 }
 
 /** Cover image with the designed "Cover unavailable" fallback (no URL, or the image fails to load). */
@@ -22,7 +25,7 @@ export function BookCover({ title, coverUrl, priority = false, sizes = CATALOG_C
   const [failed, setFailed] = useState(false);
 
   return (
-    <div className={classNames("book-cover", { "book-cover-cart": variant === "cart" })}>
+    <div className={classNames("book-cover", { [`book-cover-${variant}`]: variant !== "catalog" })}>
       {coverUrl && !failed ? (
         <Image
           src={coverUrl}
@@ -31,6 +34,8 @@ export function BookCover({ title, coverUrl, priority = false, sizes = CATALOG_C
           sizes={sizes}
           className="book-cover-image"
           priority={priority}
+          // Covers on another host (any https URL an editor typed) skip the optimiser, which only serves known hosts
+          unoptimized={/^https?:\/\//.test(coverUrl)}
           onError={() => setFailed(true)}
         />
       ) : (

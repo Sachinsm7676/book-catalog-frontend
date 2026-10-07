@@ -2,7 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { CART_STORAGE_KEY, SEED_CART_BOOK_IDS } from "@/constants/cart";
-import { MOCK_BOOKS } from "@/mocks/books";
+import { useGetBooksByIds } from "@/hooks/API/books/useGetBooksByIds";
+import type { ApiError } from "@/types/api";
 import type { Book } from "@/types/book";
 import type { AddItemResult, ApplyDiscountResult, CartState, CartTotals } from "@/types/cart";
 import { calculateCartTotals, lookupDiscountRate, normalizeDiscountCode } from "@/utils/cart-totals";
@@ -15,6 +16,11 @@ interface CartContextValue {
   totals: CartTotals;
   /** false until localStorage has been read on the client */
   hydrated: boolean;
+  /** true while the stored ids are being resolved against the API */
+  isLoading: boolean;
+  /** the API could not be reached or failed; the cart screen shows it with a retry */
+  loadError: ApiError | null;
+  retryLoad: () => void;
   addItem: (book: Book) => AddItemResult;
   removeItem: (bookId: string) => void;
   applyDiscount: (code: string) => ApplyDiscountResult;
@@ -23,13 +29,10 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-/** Catalog lookup for stored ids. Homework 2 replaces this with the API (ids only are persisted). */
-const booksById = new Map(MOCK_BOOKS.map((book) => [book.id, book]));
-
 /** A first-time visitor sees the two books every Figma frame shows in the cart */
 const seedState = (): CartState => ({ bookIds: [...SEED_CART_BOOK_IDS], discountCode: null });
 
-/** Parse the stored cart; anything malformed or unknown is dropped so the seed is used instead */
+/** Parse the stored cart; anything malformed is dropped so the seed is used instead. Ids are checked against the API later. */
 function readStoredCart(): CartState | null {
   try {
     const raw = window.localStorage.getItem(CART_STORAGE_KEY);
@@ -39,7 +42,7 @@ function readStoredCart(): CartState | null {
     const candidate = parsed as Partial<CartState>;
     if (!Array.isArray(candidate.bookIds)) return null;
     return {
-      bookIds: candidate.bookIds.filter((id): id is string => typeof id === "string" && booksById.has(id)),
+      bookIds: candidate.bookIds.filter((id): id is string => typeof id === "string"),
       discountCode: typeof candidate.discountCode === "string" ? candidate.discountCode : null,
     };
   } catch {
@@ -73,10 +76,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [state, hydrated]);
 
-  const items = useMemo(
-    () => state.bookIds.map((id) => booksById.get(id)).filter((book): book is Book => Boolean(book)),
-    [state.bookIds],
-  );
+  // Stored ids → books from the API (cached per id). Nothing is requested before storage has been read.
+  const resolved = useGetBooksByIds(hydrated ? state.bookIds : []);
+  const items = resolved.books;
+
+  // A book deleted since it was added drops out of the cart for good
+  const missingKey = resolved.missingIds.join("|");
+  useEffect(() => {
+    if (!missingKey) return;
+    const missing = new Set(missingKey.split("|"));
+    setState((current) => ({ ...current, bookIds: current.bookIds.filter((id) => !missing.has(id)) }));
+  }, [missingKey]);
   const discountRate = lookupDiscountRate(state.discountCode) ?? 0;
   const totals = useMemo(() => calculateCartTotals(items, discountRate), [items, discountRate]);
 
@@ -110,16 +120,34 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CartContextValue>(
     () => ({
       items,
-      count: items.length,
+      // The badge counts what is stored, so it does not flicker to 0 while the books load
+      count: state.bookIds.length - resolved.missingIds.length,
       discountCode: state.discountCode,
+      totals,
+      hydrated,
+      isLoading: !hydrated || resolved.isPending,
+      loadError: resolved.error,
+      retryLoad: resolved.refetch,
+      addItem,
+      removeItem,
+      applyDiscount,
+      clearDiscount,
+    }),
+    [
+      items,
+      state.bookIds.length,
+      resolved.missingIds.length,
+      resolved.isPending,
+      resolved.error,
+      resolved.refetch,
+      state.discountCode,
       totals,
       hydrated,
       addItem,
       removeItem,
       applyDiscount,
       clearDiscount,
-    }),
-    [items, state.discountCode, totals, hydrated, addItem, removeItem, applyDiscount, clearDiscount],
+    ],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

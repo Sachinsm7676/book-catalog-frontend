@@ -2,7 +2,8 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { BookService } from "@/api-services/BookService";
-import type { BooksListParams } from "@/types/book";
+import type { ApiError } from "@/types/api";
+import type { Book, BooksListParams, PagedResponse } from "@/types/book";
 import { QUERIES } from "@/utils/api-integration";
 
 /**
@@ -11,7 +12,7 @@ import { QUERIES } from "@/utils/api-integration";
  * isFetching tells the grid to dim.
  */
 export function useGetBooksList(params: BooksListParams) {
-  return useQuery({
+  return useQuery<PagedResponse<Book>, ApiError>({
     queryKey: QUERIES.books.list(params),
     queryFn: () => BookService.getBooksList(params),
     placeholderData: keepPreviousData,

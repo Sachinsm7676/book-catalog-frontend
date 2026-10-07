@@ -9,6 +9,7 @@ import { Icon } from "@/components/common/Icon";
 import { useCart } from "@/components/providers/CartProvider";
 import { useCatalogNavigation } from "@/components/providers/CatalogNavigationProvider";
 import { CART_ROUTE } from "@/constants/cart";
+import { ADMIN_BOOKS_ROUTES } from "@/constants/books-admin";
 import { CATALOG_ROUTE, SEARCH_DEBOUNCE_MS } from "@/constants/catalog";
 import { formatCount } from "@/utils/format";
 
@@ -57,6 +58,7 @@ export function SiteHeader() {
   };
 
   const onCartPage = pathname === CART_ROUTE;
+  const onAdminPages = pathname.startsWith("/admin/");
 
   return (
     <header className="site-header">
@@ -65,6 +67,15 @@ export function SiteHeader() {
         <Link href={CATALOG_ROUTE} className="brand" aria-label="DevShelf home">
           <span className="brand-mark" aria-hidden="true" />
           <span className="brand-name">DevShelf</span>
+        </Link>
+
+        {/* Manage books: shown from 768 up; on the phone layout the same link is in the footer (design-check-hw2 Q2) */}
+        <Link
+          href={ADMIN_BOOKS_ROUTES.list}
+          className="header-link"
+          aria-current={onAdminPages ? "page" : undefined}
+        >
+          Manage books
         </Link>
 
         {/* Cart link: before the search in the DOM so the phone layout's focus order matches what is seen */}

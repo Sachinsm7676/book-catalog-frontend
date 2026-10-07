@@ -5,6 +5,8 @@ const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
 
 export default defineConfig({
   testDir: "./e2e",
+  // The DevShelf API must be up before anything runs (local runs only); the message says how to start it
+  globalSetup: "./e2e/global-setup.ts",
   fullyParallel: false,
   workers: 1,
   retries: 0,
@@ -19,7 +21,21 @@ export default defineConfig({
     // The dev server compiles a page on its first visit, which can take a while (see CLAUDE.md "Known traps").
     navigationTimeout: 60_000,
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    // Default run: read-only tests. They never create, change or delete data, so they are safe against any API.
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+      testIgnore: ["**/*.mutation.spec.ts"],
+    },
+    // Create / edit / delete tests (npm run test:e2e:mutation). Each test removes what it created. Local API only;
+    // never point them at a shared environment without telling the team.
+    {
+      name: "mutation",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: ["**/*.mutation.spec.ts"],
+    },
+  ],
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {

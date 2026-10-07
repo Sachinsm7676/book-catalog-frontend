@@ -26,6 +26,8 @@ $colors-day: (
   "white-b1": #ffffff, // page background, cards, text on primary
   "amber-b1": #f59e0b, // rating star (baked into icon-star-amber.svg; kept so the palette lists every colour the frames use)
   "red-b1": #b3261e, // error label, error border, error text (Checkout frame "Email error")
+  "red-b2": #fcecea, // error banner background (form summary, delete failure)
+  "overlay-b1": rgba(25, 26, 32, 0.45), // dimmed page behind a dialog
   "shadow-b1": rgba(22, 26, 43, 0.07), // mobile card shadow
 );
 
@@ -42,6 +44,8 @@ $colors-night: (
   "white-b1": #0e0f14,
   "amber-b1": #fbbf24,
   "red-b1": #f2b8b5,
+  "red-b2": #3a1715,
+  "overlay-b1": rgba(0, 0, 0, 0.6),
   "shadow-b1": rgba(0, 0, 0, 0.4),
 );
 
@@ -130,6 +134,17 @@ $cart-empty-text-width: 440px;
 $cart-empty-text-width-mobile: 300px;
 $illustration-width: 200px; // empty-cart illustration
 $illustration-height: 160px;
+
+// ---- Manage books (Homework 2: list, form, details, delete dialog) ----
+$admin-filter-width: 240px; // category and sort dropdowns on the manage list
+$thumb-cover-width: 48px; // cover thumbnail in a table row (48 x 72)
+$details-cover-width: 240px; // cover on the details screen
+$details-cover-width-mobile: 160px;
+$form-width: 800px; // form column on create/edit
+$textarea-min-height: 120px;
+$dialog-width: 480px;
+$spinner-size: 48px;
+$details-label-width: 160px; // label column of the details list
 
 // ---- Breakpoints — WM | HTML development guideline media query list ----
 $breakpoints: (

@@ -1,0 +1,831 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// ------------------------------------------------------------------
+// Manage books (Homework 2): list, create/edit form, details, delete dialog.
+// Built from the HW1 tokens and patterns: 44px controls, 8px radius, grey-b2 borders,
+// the Checkout frame's error pattern (red label, 2px red border, 13px red helper).
+// ------------------------------------------------------------------
+
+// ---- Page column ----
+.admin-page {
+  @include container;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  padding-block: $space-8 $space-12;
+
+  @include mq-down("sm") {
+    gap: $space-4;
+    padding-block: $space-6 $space-8;
+  }
+}
+
+// Form screens use a narrower column so lines stay readable
+.admin-page-narrow {
+  max-width: calc(#{$form-width} + #{$gutter * 2});
+}
+
+// ---- Shared heading: back link, title, subtitle | actions ----
+.page-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-4;
+}
+
+.page-heading-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: $space-2;
+  min-width: 0;
+}
+
+.page-heading-title {
+  color: token("black-b1");
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  overflow-wrap: anywhere;
+
+  @include mq-down("sm") {
+    font-size: $font-size-xl;
+  }
+}
+
+.page-heading-subtitle {
+  color: token("grey-b1");
+  font-size: $font-size-md;
+  overflow-wrap: anywhere;
+}
+
+.page-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+
+  // Full-width buttons on the phone layout, easy to hit with a thumb
+  @include mq-down("sm") {
+    width: 100%;
+
+    > * {
+      flex: 1 1 0;
+    }
+  }
+}
+
+// "‹ Back to books": 13/600 grey, 44px hit area on touch screens
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: $space-1;
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  text-decoration: none;
+
+  &:hover {
+    color: token("black-b1");
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+
+    border-radius: $radius-md;
+  }
+
+  @include mq-down("sm") {
+    min-height: $control-height;
+  }
+}
+
+// ---- Header link to the manage area (hidden under 768; the footer carries it there) ----
+.header-link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  order: 3;
+  min-height: $control-height;
+  margin-left: auto;
+  padding: 0 $space-2;
+  border-radius: $radius-md;
+  color: token("black-b1");
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: token("indigo-b1");
+  }
+
+  &[aria-current="page"] {
+    color: token("indigo-b1");
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include mq-down("sm") {
+    display: none;
+  }
+}
+
+.site-header .header-cart {
+  order: 4;
+
+  @include mq-down("sm") {
+    order: 0;
+  }
+}
+
+// ---- Toolbar: search left, filters right; stacked under 768 ----
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+}
+
+.admin-search {
+  flex: 0 1 $search-width;
+  min-width: 0;
+
+  @include mq-down("md") {
+    flex: 1 1 100%;
+  }
+}
+
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+
+  @include mq-down("md") {
+    width: 100%;
+  }
+}
+
+.admin-dropdown.p-dropdown {
+  width: $admin-filter-width;
+  max-width: 100%;
+
+  @include mq-down("md") {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+
+  .p-dropdown-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// ---- Results region ----
+.admin-results {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+
+  &:focus-visible {
+    @include focus-ring;
+
+    border-radius: $radius-md;
+  }
+}
+
+// ---- Table: bordered card on desktop; every row a card under 768 ----
+.admin-table-wrap {
+  width: 100%;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("white-b1");
+  overflow: hidden;
+  transition: opacity $transition-fast;
+
+  &.is-busy {
+    opacity: $busy-opacity;
+  }
+
+  @include mq-down("sm") {
+    border: 0;
+    background: transparent;
+    overflow: visible;
+  }
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-md;
+
+  th,
+  td {
+    padding: $space-3 $space-4;
+    border-bottom: $border-width solid token("grey-b2");
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  th {
+    background: token("grey-b3");
+    color: token("grey-b1");
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    white-space: nowrap;
+  }
+
+  td {
+    color: token("black-b1");
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr:hover td {
+    background: token("grey-b3");
+  }
+
+  .cell-number {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  // Between 768 and 1024 the timestamp column gives its room to the title
+  @include mq-down("md") {
+    th:nth-child(5),
+    td:nth-child(5) {
+      display: none;
+    }
+  }
+
+  // Phone layout: no header row; each row is a card, each cell "Label  value"
+  @include mq-down("sm") {
+    thead {
+      @include visually-hidden;
+    }
+
+    tbody {
+      display: flex;
+      flex-direction: column;
+      gap: $list-gap;
+    }
+
+    tr {
+      display: flex;
+      flex-direction: column;
+      gap: $space-2;
+      padding: $space-4;
+      border: $border-width solid token("grey-b2");
+      border-radius: $radius-md;
+      background: token("white-b1");
+      box-shadow: $shadow-card;
+    }
+
+    tbody tr:hover td {
+      background: transparent;
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      gap: $space-4;
+      padding: 0;
+      border: 0;
+      font-size: $font-size-xs;
+    }
+
+    td[data-label]::before {
+      content: attr(data-label);
+      color: token("grey-b1");
+      font-weight: $font-weight-semibold;
+    }
+
+    td:nth-child(5) {
+      display: flex;
+    }
+
+    .cell-number {
+      text-align: right;
+    }
+  }
+}
+
+// Book cell: thumbnail + title link + author
+.cell-book {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  min-width: 0;
+
+  .admin-table & {
+    display: flex;
+  }
+
+  @include mq-down("sm") {
+    padding-bottom: $space-2;
+  }
+}
+
+.cell-book-text {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  min-width: 0;
+}
+
+.cell-book-title {
+  @include line-clamp(2);
+
+  color: token("black-b1");
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+
+  &:hover {
+    color: token("indigo-b1");
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+
+    border-radius: $radius-md;
+  }
+}
+
+.cell-book-author {
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+  overflow-wrap: anywhere;
+}
+
+// Row actions: Edit | Delete, side by side; full width halves on the phone card
+.cell-actions {
+  .admin-table & {
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  @include mq-down("sm") {
+    .admin-table & {
+      gap: $space-2;
+      padding-top: $space-2;
+    }
+  }
+}
+
+.p-button.row-action {
+  min-height: $control-height;
+  padding: $space-2 $space-3;
+  font-size: $font-size-xs;
+
+  & + & {
+    margin-left: $space-2;
+  }
+
+  @include mq-down("sm") {
+    flex: 1 1 0;
+
+    & + & {
+      margin-left: 0;
+    }
+  }
+}
+
+// ---- Loading rows ----
+.admin-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border-bottom: $border-width solid token("grey-b2");
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.skeleton-thumb {
+  display: block;
+  flex: 0 0 auto;
+  width: $thumb-cover-width;
+  aspect-ratio: $cover-ratio;
+}
+
+.skeleton-row-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: $space-2;
+  min-width: 0;
+}
+
+// ---- Cover variants used by the manage screens ----
+.book-cover.book-cover-thumb {
+  width: $thumb-cover-width;
+
+  // 48px is too small for the icon + text placeholder: the icon alone says it
+  .book-cover-missing-text {
+    display: none;
+  }
+
+  .book-cover-missing .icon {
+    width: $icon-sm;
+    height: $icon-sm;
+  }
+}
+
+.book-cover.book-cover-details {
+  width: $details-cover-width;
+
+  @include mq-down("sm") {
+    width: $details-cover-width-mobile;
+  }
+}
+
+// "No ratings yet" on a catalog card: same height as the star row it replaces
+.book-rating-none {
+  min-height: $icon-sm;
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+}
+
+// ---- Details screen: cover | facts and description ----
+.details-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-8;
+
+  @include mq-down("sm") {
+    flex-direction: column;
+    gap: $space-6;
+  }
+}
+
+.details-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: $space-6;
+  min-width: 0;
+  width: 100%;
+}
+
+.details-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+}
+
+.details-item {
+  display: flex;
+  gap: $space-4;
+  padding: $space-3 $space-4;
+  border-bottom: $border-width solid token("grey-b2");
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  dt {
+    flex: 0 0 $details-label-width;
+    color: token("grey-b1");
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-base;
+  }
+
+  dd {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    color: token("black-b1");
+    font-size: $font-size-md;
+    overflow-wrap: anywhere;
+  }
+
+  @include mq-down("xs-sm") {
+    flex-direction: column;
+    gap: $space-1;
+
+    dt {
+      flex-basis: auto;
+    }
+  }
+}
+
+.details-price {
+  font-weight: $font-weight-bold;
+}
+
+.details-empty {
+  color: token("grey-b1");
+}
+
+.details-description {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.details-section-title {
+  color: token("black-b1");
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+.details-text {
+  color: token("black-b1");
+  font-size: $font-size-md;
+  line-height: $line-height-base;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+// ---- Loading (details, edit, cart) ----
+.page-loading,
+.cart-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-4;
+  min-height: $empty-min-height;
+}
+
+.page-loading-text,
+.cart-loading-text {
+  color: token("grey-b1");
+  font-size: $font-size-md;
+}
+
+.loading-spinner.p-progress-spinner {
+  width: $spinner-size;
+  height: $spinner-size;
+
+  .p-progress-spinner-circle {
+    animation: p-progress-spinner-dash 1.5s ease-in-out infinite;
+    stroke: token("indigo-b1");
+  }
+}
+
+// ---- Form ----
+.book-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.form-legend {
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-6 $space-4;
+
+  @include mq-down("sm") {
+    grid-template-columns: minmax(0, 1fr);
+    gap: $space-4;
+  }
+}
+
+// Long fields span both columns
+.form-field-title,
+.form-field-coverUrl,
+.form-field-description {
+  grid-column: 1 / -1;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  min-width: 0;
+}
+
+.form-label {
+  display: flex;
+  align-items: baseline;
+  gap: $space-1;
+  color: token("black-b1");
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+}
+
+.form-required {
+  color: token("red-b1");
+}
+
+.form-optional {
+  color: token("grey-b1");
+  font-weight: $font-weight-regular;
+}
+
+// Text inputs, the number input's inner field and the textarea share the cart's input look
+.form-input.p-inputtext,
+.form-number .form-input.p-inputtext {
+  width: 100%;
+  min-height: $control-height;
+  padding: $space-2 $space-4;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("white-b1");
+  box-shadow: none;
+  color: token("black-b1");
+  font-family: inherit;
+  font-size: $font-size-md;
+
+  &::placeholder {
+    color: token("grey-b1");
+    opacity: 1;
+  }
+
+  &:enabled:hover {
+    border-color: token("grey-b1");
+  }
+
+  &:enabled:focus {
+    @include focus-ring;
+
+    border-color: token("grey-b2");
+  }
+}
+
+.form-textarea.p-inputtextarea {
+  min-height: $textarea-min-height;
+  padding-block: $space-3;
+  line-height: $line-height-base;
+  resize: vertical;
+}
+
+.form-number.p-inputnumber {
+  display: flex;
+  width: 100%;
+}
+
+.form-dropdown.p-dropdown {
+  width: 100%;
+
+  .p-dropdown-label.p-placeholder {
+    color: token("grey-b1");
+    font-weight: $font-weight-regular;
+  }
+}
+
+.form-hint {
+  color: token("grey-b1");
+  font-size: $font-size-xs;
+}
+
+.form-hint-over {
+  color: token("red-b1");
+}
+
+// Error: red label, 2px red border, red 13px message (Checkout frame "Email error")
+.form-error {
+  color: token("red-b1");
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+}
+
+.form-field.has-error {
+  .form-label {
+    color: token("red-b1");
+  }
+
+  .form-input.p-inputtext,
+  .form-dropdown.p-dropdown {
+    border: $border-width-strong solid token("red-b1");
+  }
+}
+
+// Summary banner above the fields, and the delete dialog's failure line
+.p-message.form-banner {
+  justify-content: flex-start;
+  width: 100%;
+  margin: 0;
+  padding: $space-3 $space-4;
+  border: $border-width solid token("red-b1");
+  border-radius: $radius-md;
+  background: token("red-b2");
+  color: token("red-b1");
+  font-family: $font-family-base;
+  font-size: $font-size-md;
+
+  .p-message-icon {
+    color: token("red-b1");
+  }
+}
+
+// Cancel | Submit, right-aligned; full width halves on the phone layout
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-2;
+  padding-top: $space-4;
+  border-top: $border-width solid token("grey-b2");
+
+  @include mq-down("sm") {
+    > * {
+      flex: 1 1 0;
+    }
+  }
+}
+
+// ---- Danger button (delete confirmation) ----
+.p-button.p-button-danger {
+  border-color: token("red-b1");
+  background: token("red-b1");
+  color: token("white-b1");
+
+  &:enabled:hover {
+    border-color: token("red-b1");
+    background: token("red-b1");
+    color: token("white-b1");
+  }
+}
+
+// ---- Confirmation dialog (PrimeReact Dialog) ----
+.p-dialog-mask.p-component-overlay {
+  background: token("overlay-b1");
+}
+
+.p-dialog.confirm-dialog {
+  width: calc(100vw - #{$gutter * 2});
+  max-width: $dialog-width;
+  border-radius: $radius-md;
+  background: token("white-b1");
+  font-family: $font-family-base;
+
+  .p-dialog-header,
+  .p-dialog-content,
+  .p-dialog-footer {
+    padding: $space-6;
+    background: token("white-b1");
+    color: token("black-b1");
+  }
+
+  .p-dialog-header {
+    padding-bottom: $space-2;
+    border-radius: $radius-md $radius-md 0 0;
+  }
+
+  .p-dialog-title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+  }
+
+  .p-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    padding-block: $space-2;
+  }
+
+  .p-dialog-footer {
+    border-radius: 0 0 $radius-md $radius-md;
+  }
+}
+
+.confirm-dialog-text {
+  color: token("black-b1");
+  font-size: $font-size-md;
+  line-height: $line-height-base;
+  overflow-wrap: anywhere;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-2;
+
+  @include mq-down("xs") {
+    > * {
+      flex: 1 1 0;
+    }
+  }
+}

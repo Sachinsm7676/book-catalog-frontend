@@ -10,6 +10,8 @@ interface CatalogPaginationProps {
   size: number;
   totalElements: number;
   onPageChange: (page: number) => void;
+  /** names the nav landmark; the catalog and the manage list each have one */
+  label?: string;
 }
 
 /**
@@ -17,7 +19,7 @@ interface CatalogPaginationProps {
  * Figma draws page 1 only (grey previous chevron, black next chevron); the other states reuse the same
  * two assets, mirrored with CSS where needed (docs/design-check.md, Q9).
  */
-export function CatalogPagination({ page, size, totalElements, onPageChange }: CatalogPaginationProps) {
+export function CatalogPagination({ page, size, totalElements, onPageChange, label = "Catalog pages" }: CatalogPaginationProps) {
   const template: PaginatorTemplateOptions = {
     layout: "PrevPageLink PageLinks NextPageLink",
     PrevPageLink: (options) => (
@@ -67,7 +69,7 @@ export function CatalogPagination({ page, size, totalElements, onPageChange }: C
   };
 
   return (
-    <nav className="pagination-wrap" aria-label="Catalog pages">
+    <nav className="pagination-wrap" aria-label={label}>
       <Paginator
         className="pagination"
         first={(page - 1) * size}

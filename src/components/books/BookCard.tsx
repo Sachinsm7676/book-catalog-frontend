@@ -30,16 +30,20 @@ export function BookCard({ book, onAddToCart, priority }: BookCardProps) {
         <p className="book-author">by {book.author}</p>
 
         {/* Rating: the visible star/number pair, plus one sentence for screen readers */}
-        <p className="book-rating">
-          <Icon name="star-amber" size="sm" />
-          <span className="book-rating-value" aria-hidden="true">
-            {rating}
-          </span>
-          <span className="book-rating-count" aria-hidden="true">
-            ({ratingCount})
-          </span>
-          <span className="visually-hidden">{`Rated ${rating} out of 5 by ${ratingCount} readers`}</span>
-        </p>
+        {book.ratingCount > 0 ? (
+          <p className="book-rating">
+            <Icon name="star-amber" size="sm" />
+            <span className="book-rating-value" aria-hidden="true">
+              {rating}
+            </span>
+            <span className="book-rating-count" aria-hidden="true">
+              ({ratingCount})
+            </span>
+            <span className="visually-hidden">{`Rated ${rating} out of 5 by ${ratingCount} readers`}</span>
+          </p>
+        ) : (
+          <p className="book-rating book-rating-none">No ratings yet</p>
+        )}
 
         <p className="book-price">{formatPrice(book.priceInr)}</p>
 
