@@ -6,12 +6,12 @@ Format: WM | Report, the 10 parts of the training's Step 8. Written as if handin
 
 | | |
 |---|---|
-| Frontend | `book-catalog-frontend` · branch `main` · commit `8e730c1` (deployed 8 Oct 10:00 IST) · [book-catalog-frontend-rouge.vercel.app](https://book-catalog-frontend-rouge.vercel.app) |
+| Frontend | `book-catalog-frontend` · branch `main` as of 8 Oct 13:00 IST (app code from `8e730c1`; the commits after it add the published Playwright report, docs and test changes only) · [book-catalog-frontend-rouge.vercel.app](https://book-catalog-frontend-rouge.vercel.app) |
 | Backend | `devshelf-api` · branch `main` · commit `7fa2ab8` (application code unchanged since `0d8430d`; later commits are README and the keep-awake job) · [devshelf-api.onrender.com](https://devshelf-api.onrender.com/api/v1/books) · [Swagger](https://devshelf-api.onrender.com/swagger-ui/index.html) |
 | Date | 8 Oct 2026 |
 | Start here | [/admin/books/list](https://book-catalog-frontend-rouge.vercel.app/admin/books/list) |
 
-The API is on Render's free plan. A GitHub Actions job pings it every 10 minutes so it stays awake; if it has slept anyway,
+The API is on Render's free plan. A GitHub Actions job pings it every 5 minutes so it stays awake; if it has slept anyway,
 a cold start takes a few minutes. Open the API link first and wait for it to answer before testing.
 
 ## 2. TL tasks covered
@@ -83,8 +83,11 @@ Nothing. The API starts with 24 seeded books.
 ## 8. Known issues and what is not covered
 
 - No login or roles (homework scope).
-- Free hosting: kept awake by a 10-minute ping; if it does sleep, a cold start takes a few minutes and the first page shows the error with *Try again*, which works once it is awake.
+- Free hosting: kept awake by a 5-minute ping; if it does sleep, a cold start takes a few minutes and the first page shows the error with *Try again*, which works once it is awake.
 - Cover is a URL, not an upload. No undo after delete.
+- The live demo's data is shared: reviewers add and delete books. Read-only tests that check counts read the current
+  totals from the API instead of assuming the 24 seeded books, so they stay valid while others test. (One seeded book,
+  "Python for Data Engineers: Exercises", was deleted on the live demo on 8 Oct during manual testing.)
 - Automated checks ran in Chromium only (headless, this machine, and against the deployed site). Safari, Firefox and a
   real phone are not checked yet.
 
@@ -102,11 +105,11 @@ next build                          ✓ Compiled successfully · ✓ Generating 
                                     ƒ /help · ƒ /license · ƒ /privacy (footer pages)
 
 > npm run test:e2e                  # read-only, local
-Running 181 tests using 1 worker
-181 passed (5.0m)
-  e2e/admin-books.spec.ts          25  page opens · search / category / sort / paging / no match · loading / empty / error states ·
+Running 182 tests using 1 worker
+182 passed (4.5m)
+  e2e/admin-books.spec.ts          26  page opens · search / category / sort / paging / no match · loading / empty / error states ·
                                        details · not found · form rules and messages · server error under its field ·
-                                       edit pre-filled · header and footer links · phone card title · sort ellipsis · banner styles
+                                       edit pre-filled · header and footer links · phone card title · sort ellipsis · banner styles · date calendar
   e2e/book-catalog.spec.ts         10  catalog on the API (Homework 1 regression) + cards line up across a row
   e2e/site-pages.spec.ts            5  footer Help / License / Privacy pages, no dead footer links
   e2e/catalog-navigation.spec.ts    8
@@ -115,7 +118,7 @@ Running 181 tests using 1 worker
 
 > npm run test:e2e:mutation        # create / edit / delete, local API
 Running 4 tests using 1 worker
-4 passed (19.6s)
+4 passed (14.5s)
   create → list → details → edit → delete (main flow) · duplicate ISBN from the server · double-click creates one book ·
   delete from details removes it from the list and the cart
 
@@ -125,18 +128,17 @@ Tests run: 88, Failures: 0, Errors: 0, Skipped: 0
   DatabaseUrlEnvironmentPostProcessorTest 3
 ```
 
-**Against the deployed site** (Vercel build of `8e730c1`, API on Render), 8 Oct 2026 10:05 IST:
+**Against the deployed site** (app code as deployed from `8e730c1`, API on Render), 8 Oct 2026 12:27–12:33 IST. Both projects in one run,
+so the HTML report covers read-only and create/edit/delete together; one retry allowed, so a live-API hiccup shows as
+"flaky" instead of failing the run:
 
 ```
 > PLAYWRIGHT_BASE_URL=https://book-catalog-frontend-rouge.vercel.app E2E_API_URL=https://devshelf-api.onrender.com
-> npm run test:e2e
-Running 181 tests using 1 worker
-181 passed (6.8m)
-
-> npm run test:e2e:mutation        # same variables: create → edit → delete on the live demo, each test deletes what it made
-Running 4 tests using 1 worker
-4 passed (25.8s)
-  afterwards: GET /api/v1/books?q=E2E → 0 books left; 24 books in the live catalog
+> npx playwright test --project=chromium --project=mutation --retries=1 --reporter=line,html
+Running 186 tests using 1 worker
+185 passed · 1 flaky (admin-delete-dialog @ 1440 screenshot; passed on retry) · 0 failed (6.4m)
+  afterwards: GET /api/v1/books?q=E2E → 0 test books left; 23 books in the live catalog
+  HTML report: https://book-catalog-frontend-rouge.vercel.app/qa/playwright-report/index.html
 ```
 
 ## 10. Screen sizes and browsers checked

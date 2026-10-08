@@ -51,3 +51,7 @@ next-env.d.ts
 /.tmp-assets/
 
 .vercel
+
+# local Playwright blob and merged-report scratch (the published copy lives in public/qa/)
+/.blob/
+/.qa-report/

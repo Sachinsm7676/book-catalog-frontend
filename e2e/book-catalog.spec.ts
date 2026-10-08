@@ -1,14 +1,17 @@
 import { expect, test } from "@playwright/test";
+import { PAGE_SIZE } from "../src/constants/catalog";
+import { apiCountBooks, booksLabel } from "./helpers";
 
 const ROUTE = "/books/list";
 
 test.describe("Book catalog", () => {
-  test("page opens with the title, the hero and eight books", async ({ page }) => {
+  test("page opens with the title, the hero and eight books", async ({ page, request }) => {
+    const total = await apiCountBooks(request);
     await page.goto(ROUTE);
     await expect(page).toHaveTitle(/Book catalog · DevShelf/);
     await expect(page.getByRole("heading", { level: 1, name: "Books for developers, by developers" })).toBeVisible();
     await expect(page.getByTestId("book-card")).toHaveCount(8);
-    await expect(page.getByText("24 books")).toBeVisible();
+    await expect(page.getByText(booksLabel(total), { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { level: 3, name: "Clean Code in Java" })).toBeVisible();
   });
 
@@ -48,14 +51,15 @@ test.describe("Book catalog", () => {
     await expect(page.getByTestId("book-card")).toHaveCount(8);
   });
 
-  test("category chip filters the list and updates the URL", async ({ page }) => {
+  test("category chip filters the list and updates the URL", async ({ page, request }) => {
+    const javaBooks = await apiCountBooks(request, { category: "Java" });
     await page.goto(ROUTE);
     await expect(page.getByTestId("book-card")).toHaveCount(8);
     await page.getByRole("button", { name: "Java", exact: true }).click();
     await expect(page).toHaveURL(/category=Java/);
-    await expect(page.getByText("3 books")).toBeVisible();
+    await expect(page.getByText(booksLabel(javaBooks), { exact: true })).toBeVisible();
     const categories = await page.locator(".book-category").allTextContents();
-    expect(categories.length).toBe(3);
+    expect(categories.length).toBe(Math.min(javaBooks, PAGE_SIZE));
     expect(categories.every((category) => category === "Java")).toBe(true);
   });
 

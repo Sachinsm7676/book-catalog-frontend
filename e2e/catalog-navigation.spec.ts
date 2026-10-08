@@ -1,15 +1,18 @@
 import { expect, test } from "@playwright/test";
+import { PAGE_SIZE } from "../src/constants/catalog";
+import { apiCountBooks, booksLabel } from "./helpers";
 
 const ROUTE = "/books/list";
 
 // Behaviours added after the first QA pass: history, URL clean-up, error toolbar, accessible names, 404.
 test.describe("Catalog navigation and states", () => {
-  test("the back button steps through filter states", async ({ page }) => {
+  test("the back button steps through filter states", async ({ page, request }) => {
+    const javaBooks = await apiCountBooks(request, { category: "Java" });
     await page.goto(ROUTE);
     await expect(page.getByTestId("book-card")).toHaveCount(8);
     await page.getByRole("button", { name: "Java", exact: true }).click();
     await expect(page).toHaveURL(/category=Java/);
-    await expect(page.getByText("3 books")).toBeVisible();
+    await expect(page.getByText(booksLabel(javaBooks), { exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Python", exact: true }).click();
     await expect(page).toHaveURL(/category=Python/);
     await page.goBack();
@@ -31,11 +34,13 @@ test.describe("Catalog navigation and states", () => {
     await expect(page.getByRole("textbox", { name: "Search books, authors, topics" })).toHaveValue("a");
   });
 
-  test("an out-of-range page is clamped on screen and in the URL", async ({ page }) => {
+  test("an out-of-range page is clamped on screen and in the URL", async ({ page, request }) => {
+    const total = await apiCountBooks(request);
+    const lastPage = Math.ceil(total / PAGE_SIZE);
     await page.goto(`${ROUTE}?page=999`);
-    await expect(page.getByTestId("book-card")).toHaveCount(8);
-    await expect(page).toHaveURL(/page=3$/);
-    await expect(page.getByRole("button", { name: "Page 3" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByTestId("book-card")).toHaveCount(total - PAGE_SIZE * (lastPage - 1));
+    await expect(page).toHaveURL(new RegExp(`page=${lastPage}$`));
+    await expect(page.getByRole("button", { name: `Page ${lastPage}` })).toHaveAttribute("aria-current", "page");
     await page.goto(`${ROUTE}?category=Nope&sort=bogus&page=abc`);
     await expect(page.getByTestId("book-card")).toHaveCount(8);
     await expect(page).toHaveURL(new RegExp(`${ROUTE}$`));
@@ -64,10 +69,12 @@ test.describe("Catalog navigation and states", () => {
     await expect(page.getByLabel("Sort books").first()).toBeAttached();
   });
 
-  test("every book on every page has a cover; the placeholder only appears on demand", async ({ page }) => {
-    for (const pageNumber of [1, 2, 3]) {
+  test("every book on every page has a cover; the placeholder only appears on demand", async ({ page, request }) => {
+    const total = await apiCountBooks(request);
+    const lastPage = Math.ceil(total / PAGE_SIZE);
+    for (let pageNumber = 1; pageNumber <= lastPage; pageNumber += 1) {
       await page.goto(`${ROUTE}?page=${pageNumber}`);
-      await expect(page.getByTestId("book-card")).toHaveCount(8);
+      await expect(page.getByTestId("book-card")).toHaveCount(Math.min(PAGE_SIZE, total - PAGE_SIZE * (pageNumber - 1)));
       await expect(page.getByTestId("book-cover-missing")).toHaveCount(0);
     }
     await page.goto(`${ROUTE}?state=missing-cover`);

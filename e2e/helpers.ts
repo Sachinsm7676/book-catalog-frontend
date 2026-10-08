@@ -85,3 +85,15 @@ export async function pickDate(page: Page, iso: string): Promise<void> {
   await panel.locator(".p-monthpicker-month", { hasText: MONTHS_SHORT[month - 1] }).click();
   await panel.locator("table td:not(.p-datepicker-other-month) > span").getByText(String(day), { exact: true }).click();
 }
+
+/**
+ * How many books the API holds right now (optionally for one category). The deployed demo is shared: reviewers add
+ * and delete books, so tests that check counts compare the screen with this source of truth, not with the seed's 24.
+ */
+export async function apiCountBooks(request: APIRequestContext, params: { category?: string } = {}): Promise<number> {
+  const response = await request.get(`${API_URL}/api/v1/books`, { params: { size: 1, ...params } });
+  return (await response.json()).totalElements;
+}
+
+/** The catalog's results label for a count: "1 book", "24 books" */
+export const booksLabel = (count: number): string => `${count} ${count === 1 ? "book" : "books"}`;

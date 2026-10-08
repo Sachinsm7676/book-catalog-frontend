@@ -18,7 +18,7 @@ with test cases, Playwright tests and a QA build report.** Submitted by Sachin S
 | Screenshots | [docs/screenshots/](docs/screenshots/) — every screen and state at the WM widths plus 1440 |
 
 > **The API is on Render's free plan, which sleeps after about 15 minutes without traffic, and a cold start takes a
-> few minutes.** A scheduled GitHub Actions job in the API repo ([`keep-warm.yml`](https://github.com/Sachinsm7676/devshelf-api/blob/main/.github/workflows/keep-warm.yml)) pings it every 10 minutes so it stays
+> few minutes.** A scheduled GitHub Actions job in the API repo ([`keep-warm.yml`](https://github.com/Sachinsm7676/devshelf-api/blob/main/.github/workflows/keep-warm.yml)) pings it every 5 minutes so it stays
 > awake. If it ever is asleep, the page shows "We could not load the books" after 70 s; wait a minute and press *Try again*.
 
 ## What I built (Homework 2)
@@ -117,11 +117,11 @@ next build                          ✓ Compiled successfully · ✓ Generating 
                                     ƒ /help · ƒ /license · ƒ /privacy (footer pages)
 
 > npm run test:e2e                  # read-only, local
-Running 181 tests using 1 worker
-181 passed (5.0m)
-  e2e/admin-books.spec.ts          25  page opens · search / category / sort / paging / no match · loading / empty / error states ·
+Running 182 tests using 1 worker
+182 passed (4.5m)
+  e2e/admin-books.spec.ts          26  page opens · search / category / sort / paging / no match · loading / empty / error states ·
                                        details · not found · form rules and messages · server error under its field ·
-                                       edit pre-filled · header and footer links · phone card title · sort ellipsis · banner styles
+                                       edit pre-filled · header and footer links · phone card title · sort ellipsis · banner styles · date calendar
   e2e/book-catalog.spec.ts         10  catalog on the API (Homework 1 regression) + cards line up across a row
   e2e/site-pages.spec.ts            5  footer Help / License / Privacy pages, no dead footer links
   e2e/catalog-navigation.spec.ts    8
@@ -130,7 +130,7 @@ Running 181 tests using 1 worker
 
 > npm run test:e2e:mutation        # create / edit / delete, local API
 Running 4 tests using 1 worker
-4 passed (19.6s)
+4 passed (14.5s)
   create → list → details → edit → delete (main flow) · duplicate ISBN from the server · double-click creates one book ·
   delete from details removes it from the list and the cart
 
@@ -140,18 +140,17 @@ Tests run: 88, Failures: 0, Errors: 0, Skipped: 0
   DatabaseUrlEnvironmentPostProcessorTest 3
 ```
 
-**Against the deployed site** (Vercel build of `8e730c1`, API on Render), 8 Oct 2026 10:05 IST:
+**Against the deployed site** (app code as deployed from `8e730c1`, API on Render), 8 Oct 2026 12:27–12:33 IST. Both projects in one run,
+so the HTML report covers read-only and create/edit/delete together; one retry allowed, so a live-API hiccup shows as
+"flaky" instead of failing the run:
 
 ```
 > PLAYWRIGHT_BASE_URL=https://book-catalog-frontend-rouge.vercel.app E2E_API_URL=https://devshelf-api.onrender.com
-> npm run test:e2e
-Running 181 tests using 1 worker
-181 passed (6.8m)
-
-> npm run test:e2e:mutation        # same variables: create → edit → delete on the live demo, each test deletes what it made
-Running 4 tests using 1 worker
-4 passed (25.8s)
-  afterwards: GET /api/v1/books?q=E2E → 0 books left; 24 books in the live catalog
+> npx playwright test --project=chromium --project=mutation --retries=1 --reporter=line,html
+Running 186 tests using 1 worker
+185 passed · 1 flaky (admin-delete-dialog @ 1440 screenshot; passed on retry) · 0 failed (6.4m)
+  afterwards: GET /api/v1/books?q=E2E → 0 test books left; 23 books in the live catalog
+  HTML report: https://book-catalog-frontend-rouge.vercel.app/qa/playwright-report/index.html
 ```
 
 ## Explaining the code (review map)
@@ -176,7 +175,7 @@ Running 4 tests using 1 worker
 
 - **No login:** anyone with the link can add, edit or delete books (the Roles test area is "not applicable" for the
   homework). The demo API is public on purpose.
-- **Free hosting:** the API is kept awake by a 10-minute ping; if it does sleep, a cold start takes a few minutes and Render's free database expires after a
+- **Free hosting:** the API is kept awake by a 5-minute ping; if it does sleep, a cold start takes a few minutes and Render's free database expires after a
   limited time, after which it would need a new one.
 - Cover is a URL (an `https://` link or one of the app's `/assets/images/` files), not an upload.
 - No undo after delete (the API has no soft delete); the dialog says "This cannot be undone."
