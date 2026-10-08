@@ -182,7 +182,12 @@
     min-width: 0;
   }
 
+  // Block, not the shared inline-flex: text-overflow has no effect on a flex container,
+  // so a long option ("Recently updated" at 375) was clipped without the ellipsis
   .p-dropdown-label {
+    display: block;
+    align-self: center;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -302,6 +307,12 @@
       padding: 0;
       border: 0;
       font-size: $font-size-xs;
+    }
+
+    // The book cell has no label: keep the title beside its cover. space-between (meant for "Label  value")
+    // pushed a one-line title to the far edge of the card
+    td.cell-book {
+      justify-content: flex-start;
     }
 
     td[data-label]::before {
@@ -723,9 +734,12 @@
   }
 }
 
-// Summary banner above the fields, and the delete dialog's failure line
-.p-message.form-banner {
+// Summary banner above the fields, and the delete dialog's failure line.
+// PrimeReact's <Message> renders .p-inline-message, not .p-message.
+.p-inline-message.form-banner {
+  display: flex;
   justify-content: flex-start;
+  gap: $space-2;
   width: 100%;
   margin: 0;
   padding: $space-3 $space-4;
@@ -736,8 +750,14 @@
   font-family: $font-family-base;
   font-size: $font-size-md;
 
-  .p-message-icon {
+  .p-inline-message-icon {
+    flex-shrink: 0;
+    margin: 0;
     color: token("red-b1");
+  }
+
+  .p-inline-message-text {
+    font-weight: $font-weight-regular;
   }
 }
 

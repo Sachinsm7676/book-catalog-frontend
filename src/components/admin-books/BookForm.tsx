@@ -323,6 +323,6 @@ const HINTED: Partial<Record<BookField, string>> = {
   priceInr: "₹0 to ₹99,999.99, up to 2 decimal places.",
   isbn: "13 digits, no dashes. Must be unique.",
   publishedAt: "Today or earlier.",
-  coverUrl: "A link starting with https://. Leave empty to show “Cover unavailable”.",
+  coverUrl: "A link starting with https://, or an /assets/images/ path. Leave empty to show “Cover unavailable”.",
   description: "",
 };

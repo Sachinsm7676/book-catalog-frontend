@@ -89,6 +89,28 @@ test.describe("Manage books: states", () => {
     await expect(page.getByTestId("admin-count")).toHaveText("Loading books…");
   });
 
+  test("a sort label too long for the phone dropdown ends in an ellipsis", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(ADMIN.list);
+    const label = page.locator("#admin-sort-dropdown .p-dropdown-label");
+    await expect(label).toHaveText("Recently updated");
+    await expect(label).toHaveCSS("text-overflow", "ellipsis");
+    await expect(label).toHaveCSS("display", "block");
+    const clipped = await label.evaluate((el) => el.scrollWidth > el.clientWidth);
+    expect(clipped, "the label is wider than its box at 375, so the ellipsis is what the user sees").toBe(true);
+  });
+
+  test("on the phone card a short title sits beside its cover, not at the far edge", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(`${ADMIN.list}?sort=title`);
+    const row = page.getByTestId("admin-book-row").filter({ has: page.getByRole("link", { name: SEEDED.title, exact: true }) });
+    const cell = row.locator("td.cell-book");
+    const coverRight = await cell.locator("> :first-child").evaluate((el) => el.getBoundingClientRect().right);
+    const textLeft = await cell.locator(".cell-book-text").evaluate((el) => el.getBoundingClientRect().left);
+    // The design gap is 12 px; space-between used to push "Clean Code in Java" ~100 px away
+    expect(textLeft - coverRight).toBeLessThanOrEqual(16);
+  });
+
   test("an empty database shows No books yet with an Add book action", async ({ page }) => {
     await stubBooksList(page, EMPTY_PAGE);
     await page.goto(ADMIN.list);
@@ -176,6 +198,15 @@ test.describe("Manage books: form validation (nothing is saved)", () => {
     await expect(page.getByTestId("error-priceInr")).toHaveText("Price is required.");
     await expect(page.locator("#book-title")).toBeFocused();
     expect(writes).toEqual([]);
+  });
+
+  test("the error banner gets its own styles: icon spaced from the text, red-b1 border", async ({ page }) => {
+    await page.goto(ADMIN.create);
+    await page.getByTestId("submit-book").click();
+    const banner = page.getByTestId("form-banner");
+    await expect(banner).toHaveCSS("column-gap", "8px");
+    await expect(banner).toHaveCSS("border-top-color", "rgb(179, 38, 30)");
+    await expect(banner).toHaveCSS("justify-content", "flex-start");
   });
 
   test("too short, wrong format and future values get the same messages as the API", async ({ page }) => {

@@ -57,6 +57,7 @@ or **Negative** (it refuses what it should refuse). Areas follow the training's 
 | MB-42 | Positive | Verify that an error clears as soon as the field is corrected | Error shown | Type a valid title | The title error disappears | admin-books: error clears |
 | MB-43 | Positive | Verify that optional fields can stay empty | — | Fill only the four required fields | Saved; details show "Not set" for ISBN, date, description; cover shows "Cover unavailable" | Manual |
 | MB-44 | Negative | Verify that the API refuses bad input even without the browser checks | API running | `curl -X POST …/api/v1/books -d '{}'` | 400 `VALIDATION_FAILED` with all four required-field messages | API tests (`BookControllerTest`) |
+| MB-45 | Positive | Verify that the error banner is styled as designed | — | Click "Add book" with nothing filled | Light red banner, red-b1 border, icon 8 px from the text, text left-aligned | admin-books: error banner styles |
 
 ## 4. List behaviour
 
@@ -100,3 +101,5 @@ or **Negative** (it refuses what it should refuse). Areas follow the training's 
 | MB-83 | Positive | Verify that the form goes to one column under 768 and buttons are full width | Width 375 | One column; Cancel / Add book side by side, each half width | responsive |
 | MB-84 | Positive | Verify that the delete dialog fits a phone | Width 375 | Dialog inside the screen with 16 px margins | responsive (`admin-delete-dialog-375.png`) |
 | MB-85 | Positive | Verify that long titles wrap instead of overflowing | Create a 120-character title | Wraps in list, card, details heading | Manual |
+| MB-86 | Positive | Verify that on a phone card a short title sits beside its cover | Width 375, sort Title A–Z | Look at the "Clean Code in Java" card | Title and author start 12 px right of the cover, not at the far edge of the card | admin-books: phone card title |
+| MB-87 | Positive | Verify that a long sort option ends in an ellipsis on a phone | Width 375 | Open the list (sort "Recently updated") | The label is cut with "…", not mid-letter | admin-books: sort ellipsis |
