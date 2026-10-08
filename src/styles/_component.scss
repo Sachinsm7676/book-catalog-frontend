@@ -153,8 +153,10 @@
   font-size: $font-size-xs;
 }
 
-// Price: 20/700
+// Price: 20/700. On the grid, auto top margin pushes price and "Add to cart" to the bottom of the card, so they
+// line up across a row whatever the title length (the phone row sizes to its content, so nothing moves there)
 .book-price {
+  margin-top: auto;
   color: token("black-b1");
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;

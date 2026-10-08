@@ -111,7 +111,9 @@
   }
 }
 
+// Flex so the card fills the row's height: cards in one row end level even when one title wraps to two lines
 .book-grid-item {
+  display: flex;
   min-width: 0;
 }
 

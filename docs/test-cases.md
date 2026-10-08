@@ -103,3 +103,14 @@ or **Negative** (it refuses what it should refuse). Areas follow the training's 
 | MB-85 | Positive | Verify that long titles wrap instead of overflowing | Create a 120-character title | Wraps in list, card, details heading | Manual |
 | MB-86 | Positive | Verify that on a phone card a short title sits beside its cover | Width 375, sort Title A–Z | Look at the "Clean Code in Java" card | Title and author start 12 px right of the cover, not at the far edge of the card | admin-books: phone card title |
 | MB-87 | Positive | Verify that a long sort option ends in an ellipsis on a phone | Width 375 | Open the list (sort "Recently updated") | The label is cut with "…", not mid-letter | admin-books: sort ellipsis |
+| MB-88 | Positive | Verify that price and Add to cart line up across a catalog row | Width 1440 | Open `/books/list?sort=rating` (a row mixes one- and two-line titles) | In each row of four, the price lines and the Add to cart buttons are at the same height | book-catalog: line up |
+
+## 8. Footer pages (regression)
+
+| ID | Type | Test case | Precondition | Steps | Expected result | Automated by |
+|---|---|---|---|---|---|---|
+| MB-90 | Positive | Verify that the footer Help link opens the Help page | — | From Manage books, click "Help" in the footer | `/help`, tab "Help · DevShelf", h1 "Help", sections incl. "Manage books" | site-pages |
+| MB-91 | Positive | Verify that the footer License link opens the License page | — | Click "License" in the footer | `/license`, h1 "License", "Source code" with links to both GitHub repositories | site-pages |
+| MB-92 | Positive | Verify that the footer Privacy link opens the Privacy page | — | Click "Privacy" in the footer | `/privacy`, h1 "Privacy", explains the cart stays in the browser and added books are public | site-pages |
+| MB-93 | Negative | Verify that no footer link is a dead "#" link | — | Read the footer links on any page | Exactly: Manage books, Help, License, Privacy, each to a real page | site-pages |
+| MB-94 | Positive | Verify that the footer pages do not scroll sideways | Widths 1920 / 1440 / 1366 / 768 / 375 | Open each page | Page never wider than the viewport | responsive (`help-*.png`, `license-*.png`, `privacy-*.png`) |

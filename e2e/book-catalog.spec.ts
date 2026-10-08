@@ -12,6 +12,27 @@ test.describe("Book catalog", () => {
     await expect(page.getByRole("heading", { level: 3, name: "Clean Code in Java" })).toBeVisible();
   });
 
+  test("price and Add to cart line up across every row, even when one title wraps to two lines", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    // Sorted by rating, the first row mixes one- and two-line titles (the case reported in review)
+    await page.goto(`${ROUTE}?sort=rating`);
+    await expect(page.getByTestId("book-card")).toHaveCount(8);
+    const rows = await page.getByTestId("book-card").evaluateAll((cards) => {
+      const byRow = new Map<number, number[]>();
+      for (const card of cards) {
+        const top = Math.round(card.getBoundingClientRect().top);
+        const button = card.querySelector(".book-action");
+        if (!button) continue;
+        byRow.set(top, [...(byRow.get(top) ?? []), button.getBoundingClientRect().top]);
+      }
+      return [...byRow.values()];
+    });
+    expect(rows.length, "two rows of four at 1440").toBe(2);
+    for (const buttonTops of rows) {
+      expect(Math.max(...buttonTops) - Math.min(...buttonTops), `button tops ${buttonTops.join(", ")}`).toBeLessThanOrEqual(1);
+    }
+  });
+
   test("loading state shows eight skeleton cards and no books", async ({ page }) => {
     await page.goto(`${ROUTE}?state=loading`);
     await expect(page.getByTestId("book-card-skeleton")).toHaveCount(8);

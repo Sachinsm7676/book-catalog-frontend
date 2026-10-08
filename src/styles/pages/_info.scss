@@ -1,0 +1,38 @@
+@use "../variables" as *;
+
+// ---- Help / License / Privacy: narrow text column under the shared page heading ----
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.info-section-title {
+  color: token("black-b1");
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+// Body text: 16px, readable line height; lists keep their bullets inside the column
+.info-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  color: token("black-b1");
+  font-size: $font-size-md;
+  line-height: $line-height-base;
+  overflow-wrap: anywhere;
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    padding-left: $space-6;
+    list-style: disc;
+  }
+
+  a {
+    color: token("indigo-b1");
+    text-decoration: underline;
+  }
+}

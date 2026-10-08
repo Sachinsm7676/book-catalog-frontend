@@ -11,6 +11,7 @@
 @use "pages/book-catalog";
 @use "pages/cart";
 @use "pages/admin-books";
+@use "pages/info";
 
 // ---- Colour tokens as CSS custom properties: [day] by default, [night] when <html data-theme="dark"> ----
 :root {

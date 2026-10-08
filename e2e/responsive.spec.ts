@@ -70,6 +70,10 @@ const STATES: ScreenState[] = [
     },
   },
   { name: "admin-not-found", url: "/admin/books/details/no-such-book", everyWidth: false, ready: (page) => expect(page.getByTestId("book-not-found")).toBeVisible() },
+  // ---- Footer pages ----
+  { name: "help", url: "/help", everyWidth: false, ready: (page) => expect(page.getByTestId("help-page")).toBeVisible() },
+  { name: "license", url: "/license", everyWidth: false, ready: (page) => expect(page.getByTestId("license-page")).toBeVisible() },
+  { name: "privacy", url: "/privacy", everyWidth: false, ready: (page) => expect(page.getByTestId("privacy-page")).toBeVisible() },
 ];
 
 const OUT_DIR = path.join(process.cwd(), "docs", "screenshots");

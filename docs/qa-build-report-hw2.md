@@ -39,6 +39,8 @@ Open the API link once before testing.
 | 3 | On a phone, a book with a short title showed the title far from its cover in the list card | The book cell keeps the title beside the cover |
 | 4 | On a phone, the sort box cut "Recently updated" off mid-letter | It now ends in "…" |
 | 5 | The cover URL help text did not mention `/assets/images/` paths, which the API accepts | Help text updated |
+| 6 | Catalog: when one title in a row wrapped to two lines, that card's price and *Add to cart* sat lower than its neighbours' (found in review, `?sort=rating`) | Cards fill the row height and the price + button sit at the bottom, so they line up across every row |
+| 7 | Footer *Help*, *License* and *Privacy* were placeholder `#` links: clicking them did nothing | Three short pages: `/help` (how to use the site), `/license` (demo content, links to both repos), `/privacy` (cart kept in the browser only, added books are public, no tracking) |
 
 Each fix has an automated test (see part 9).
 
@@ -70,7 +72,9 @@ Nothing. The API starts with 24 seeded books.
     after *Delete book* → toast "Book deleted", the book is gone from the list, the catalog and the cart.
 11. Open `/admin/books/details/no-such-book`: "Book not found" with *Back to books*.
 12. Double-click *Add book* / *Delete book* quickly: only one book is created / one request is sent.
-13. Repeat 1, 5 and 10 at 1920, 1366, 768 and 375 wide (browser responsive mode): no sideways scrolling, cards on a phone,
+13. On the catalog sorted by rating (`/books/list?sort=rating`), check every row: prices and *Add to cart* buttons line up.
+14. Click *Help*, *License* and *Privacy* in the footer: each opens its own page; the License page links both repositories.
+15. Repeat 1, 5, 10 and 14 at 1920, 1366, 768 and 375 wide (browser responsive mode): no sideways scrolling, cards on a phone,
     "Manage books" in the footer under 768.
 
 ## 8. Known issues and what is not covered
