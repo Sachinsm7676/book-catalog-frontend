@@ -6,8 +6,8 @@ Format: WM | Report, the 10 parts of the training's Step 8. Written as if handin
 
 | | |
 |---|---|
-| Frontend | `book-catalog-frontend` · branch `main` · commit `899e462` (deployed 8 Oct 06:14 IST) · [book-catalog-frontend-rouge.vercel.app](https://book-catalog-frontend-rouge.vercel.app) |
-| Backend | `devshelf-api` · branch `main` · commit `eeb7acb` (code unchanged since `0d8430d`) · [devshelf-api.onrender.com](https://devshelf-api.onrender.com/api/v1/books) · [Swagger](https://devshelf-api.onrender.com/swagger-ui/index.html) |
+| Frontend | `book-catalog-frontend` · branch `main` · commit `8e730c1` (deployed 8 Oct 10:00 IST) · [book-catalog-frontend-rouge.vercel.app](https://book-catalog-frontend-rouge.vercel.app) |
+| Backend | `devshelf-api` · branch `main` · commit `7fa2ab8` (application code unchanged since `0d8430d`; later commits are README and the keep-awake job) · [devshelf-api.onrender.com](https://devshelf-api.onrender.com/api/v1/books) · [Swagger](https://devshelf-api.onrender.com/swagger-ui/index.html) |
 | Date | 8 Oct 2026 |
 | Start here | [/admin/books/list](https://book-catalog-frontend-rouge.vercel.app/admin/books/list) |
 
@@ -122,17 +122,17 @@ Tests run: 88, Failures: 0, Errors: 0, Skipped: 0
   DatabaseUrlEnvironmentPostProcessorTest 3
 ```
 
-**Against the deployed site** (Vercel build of `899e462`, API on Render), 8 Oct 2026 06:20 IST:
+**Against the deployed site** (Vercel build of `8e730c1`, API on Render), 8 Oct 2026 10:05 IST:
 
 ```
 > PLAYWRIGHT_BASE_URL=https://book-catalog-frontend-rouge.vercel.app E2E_API_URL=https://devshelf-api.onrender.com
 > npm run test:e2e
-Running 160 tests using 1 worker
-160 passed (5.4m)
+Running 181 tests using 1 worker
+181 passed (6.8m)
 
 > npm run test:e2e:mutation        # same variables: create → edit → delete on the live demo, each test deletes what it made
 Running 4 tests using 1 worker
-4 passed (24.8s)
+4 passed (25.8s)
   afterwards: GET /api/v1/books?q=E2E → 0 books left; 24 books in the live catalog
 ```
 
