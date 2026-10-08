@@ -59,7 +59,7 @@ the API error shape) → TanStack Query hooks in `src/hooks/API/books/` (`useGet
 **Backend (`devshelf-api`):** `GET /api/v1/books` (search, category, sort, page, size), `GET /{id}`, `POST`, `PUT /{id}`,
 `DELETE /{id}`; Spring Boot 3.5, Java 21, PostgreSQL with Flyway (table + 24 seeded books), field validation in
 `BookRequestValidator` (one message per field, in form order), one error shape (`status`, `code`, `message`, `fieldErrors`), CORS limited to the frontend origin,
-Swagger UI. 88 JUnit tests. Deployed with the Render Blueprint in its repo (`render.yaml`).
+Swagger UI. 90 JUnit tests. Deployed with the Render Blueprint in its repo (`render.yaml`).
 
 One real response (`GET https://devshelf-api.onrender.com/api/v1/books/clean-code-in-java`):
 
@@ -80,7 +80,7 @@ git clone https://github.com/Sachinsm7676/devshelf-api.git
 cd devshelf-api
 docker compose up -d              # PostgreSQL 16 on 5432 (or see its README for an existing PostgreSQL)
 ./mvnw spring-boot:run            # Windows: .\mvnw.cmd spring-boot:run → http://localhost:8080 (Flyway seeds 24 books)
-./mvnw test                       # 88 tests, in-memory H2
+./mvnw test                       # 90 tests, in-memory H2
 
 # 2. Frontend — this repo
 git clone https://github.com/Sachinsm7676/book-catalog-frontend.git
@@ -135,9 +135,9 @@ Running 4 tests using 1 worker
   delete from details removes it from the list and the cart
 
 > devshelf-api: ./mvnw test
-Tests run: 88, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 90, Failures: 0, Errors: 0, Skipped: 0
   BookCrudApiTest 14 · BookListApiTest 23 · BookValidationApiTest 34 · BookServiceTest 3 · SlugGeneratorTest 11 ·
-  DatabaseUrlEnvironmentPostProcessorTest 3
+  DatabaseUrlEnvironmentPostProcessorTest 3 · KeepAwakePingerTest 2
 ```
 
 **Against the deployed site** (app code as deployed from `8e730c1`, API on Render), 8 Oct 2026 12:27–12:33 IST. Both projects in one run,

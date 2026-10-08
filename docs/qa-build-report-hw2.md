@@ -123,9 +123,9 @@ Running 4 tests using 1 worker
   delete from details removes it from the list and the cart
 
 > devshelf-api: ./mvnw test
-Tests run: 88, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 90, Failures: 0, Errors: 0, Skipped: 0
   BookCrudApiTest 14 · BookListApiTest 23 · BookValidationApiTest 34 · BookServiceTest 3 · SlugGeneratorTest 11 ·
-  DatabaseUrlEnvironmentPostProcessorTest 3
+  DatabaseUrlEnvironmentPostProcessorTest 3 · KeepAwakePingerTest 2
 ```
 
 **Against the deployed site** (app code as deployed from `8e730c1`, API on Render), 8 Oct 2026 12:27–12:33 IST. Both projects in one run,
