@@ -11,8 +11,8 @@ Format: WM | Report, the 10 parts of the training's Step 8. Written as if handin
 | Date | 8 Oct 2026 |
 | Start here | [/admin/books/list](https://book-catalog-frontend-rouge.vercel.app/admin/books/list) |
 
-The API is on Render's free plan: after ~15 minutes without traffic the first request takes up to a minute while it wakes.
-Open the API link once before testing.
+The API is on Render's free plan. A GitHub Actions job pings it every 10 minutes so it stays awake; if it has slept anyway,
+a cold start takes a few minutes. Open the API link first and wait for it to answer before testing.
 
 ## 2. TL tasks covered
 
@@ -80,7 +80,7 @@ Nothing. The API starts with 24 seeded books.
 ## 8. Known issues and what is not covered
 
 - No login or roles (homework scope).
-- The free API sleeps when idle: the first load can take up to a minute. If it times out, *Try again* works once it is awake.
+- Free hosting: kept awake by a 10-minute ping; if it does sleep, a cold start takes a few minutes and the first page shows the error with *Try again*, which works once it is awake.
 - Cover is a URL, not an upload. No undo after delete.
 - Automated checks ran in Chromium only (headless, this machine, and against the deployed site). Safari, Firefox and a
   real phone are not checked yet.
@@ -95,22 +95,24 @@ eslint                              0 problems
 tsc --noEmit                        exit 0
 next build                          ✓ Compiled successfully · ✓ Generating static pages (4/4)
                                     ƒ /admin/books/list 4.48 kB · ƒ /admin/books/create 609 B · ƒ /admin/books/details/[id] 7.03 kB
-                                    ƒ /admin/books/edit/[id] 2.69 kB · ƒ /books/list 5.36 kB · ƒ /cart 9.49 kB
+                                    ƒ /admin/books/edit/[id] 2.69 kB · ƒ /books/list 5.37 kB · ƒ /cart 9.5 kB
+                                    ƒ /help · ƒ /license · ƒ /privacy (footer pages)
 
 > npm run test:e2e                  # read-only, local
-Running 160 tests using 1 worker
-160 passed (8.0m)
+Running 181 tests using 1 worker
+181 passed (5.0m)
   e2e/admin-books.spec.ts          25  page opens · search / category / sort / paging / no match · loading / empty / error states ·
                                        details · not found · form rules and messages · server error under its field ·
                                        edit pre-filled · header and footer links · phone card title · sort ellipsis · banner styles
-  e2e/book-catalog.spec.ts          9  catalog on the API (Homework 1 regression)
+  e2e/book-catalog.spec.ts         10  catalog on the API (Homework 1 regression) + cards line up across a row
+  e2e/site-pages.spec.ts            5  footer Help / License / Privacy pages, no dead footer links
   e2e/catalog-navigation.spec.ts    8
   e2e/cart.spec.ts                  8  incl. a deleted book leaving the cart
-  e2e/responsive.spec.ts          110  every screen and state at 1920 … 375 (+1440): no sideways scroll, screenshot saved
+  e2e/responsive.spec.ts          125  every screen and state at 1920 … 375 (+1440): no sideways scroll, screenshot saved
 
 > npm run test:e2e:mutation        # create / edit / delete, local API
 Running 4 tests using 1 worker
-4 passed (19.9s)
+4 passed (19.6s)
   create → list → details → edit → delete (main flow) · duplicate ISBN from the server · double-click creates one book ·
   delete from details removes it from the list and the cart
 

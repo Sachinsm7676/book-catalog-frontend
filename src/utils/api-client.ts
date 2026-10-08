@@ -11,7 +11,7 @@ export const apiClient = axios.create({
 
 /** Shown when the request never got an answer: offline, API asleep (free host) or stopped. */
 export const NETWORK_ERROR_MESSAGE =
-  "We could not reach the DevShelf server. Check your connection and try again. The demo server can take up to a minute to wake up.";
+  "We could not reach the DevShelf server. Check your connection and try again. The demo server can take a few minutes to wake up.";
 
 /** Shown for a server answer that is not in our error format (proxy page, crash before our handler). */
 export const UNKNOWN_ERROR_MESSAGE = "Something went wrong on our side. Please try again in a moment.";

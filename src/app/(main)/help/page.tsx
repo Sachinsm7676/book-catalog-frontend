@@ -48,7 +48,7 @@ export default function HelpPage() {
           heading: "The first page is slow to load",
           body: (
             <p>
-              The demo&apos;s book service sleeps after a few quiet minutes and can take up to a minute to wake. If a page
+              The demo&apos;s book service can be asleep after a quiet spell and take a few minutes to wake. If a page
               shows &ldquo;Try again&rdquo;, wait a moment and press it.
             </p>
           ),

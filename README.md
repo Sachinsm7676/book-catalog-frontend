@@ -16,9 +16,9 @@ with test cases, Playwright tests and a QA build report.** Submitted by Sachin S
 | Design vs build | [docs/design/side-by-side/](docs/design/side-by-side/) (Figma left, deployed build right) · Figma exports in [docs/design/figma/](docs/design/figma/) |
 | Screenshots | [docs/screenshots/](docs/screenshots/) — every screen and state at the WM widths plus 1440 |
 
-> **The API is on Render's free plan and sleeps after about 15 minutes without traffic.** The first page load after a
-> quiet spell can take up to a minute while it wakes; after that it is fast. The frontend waits up to 70 s before it
-> shows "We could not load the books" with *Try again*.
+> **The API is on Render's free plan, which sleeps after about 15 minutes without traffic, and a cold start takes a
+> few minutes.** A scheduled GitHub Actions job in the API repo ([`keep-warm.yml`](https://github.com/Sachinsm7676/devshelf-api/blob/main/.github/workflows/keep-warm.yml)) pings it every 10 minutes so it stays
+> awake. If it ever is asleep, the page shows "We could not load the books" after 70 s; wait a minute and press *Try again*.
 
 ## What I built (Homework 2)
 
@@ -43,6 +43,10 @@ the Homework 1 catalog sells. The catalog and cart now read them from the API; t
 - **Filters live in the URL** (`?q=&category=&sort=&page=`), so a view can be shared and the back button works.
 - **"Manage books" link:** in the header from 768 px up; in the footer below that (no room beside the cart on a phone —
   design question Q2).
+- **Footer pages:** *Help* (how to use the site), *License* (a demo, sample data, links to both repos) and *Privacy*
+  (no sign-in or tracking; the cart stays in the browser; added books are public) at `/help`, `/license`, `/privacy`.
+- **Catalog cards line up:** price and *Add to cart* sit at the bottom of each card, level across a row even when a
+  title wraps to two lines.
 
 **Data layer (service + hook, no API call in a component):** endpoint paths in `src/utils/api-integration.ts`
 → axios calls in `src/api-services/BookService.ts` (`src/utils/api-client.ts` holds the axios instance, the 70 s timeout and
@@ -106,22 +110,24 @@ eslint                              0 problems
 tsc --noEmit                        exit 0
 next build                          ✓ Compiled successfully · ✓ Generating static pages (4/4)
                                     ƒ /admin/books/list 4.48 kB · ƒ /admin/books/create 609 B · ƒ /admin/books/details/[id] 7.03 kB
-                                    ƒ /admin/books/edit/[id] 2.69 kB · ƒ /books/list 5.36 kB · ƒ /cart 9.49 kB
+                                    ƒ /admin/books/edit/[id] 2.69 kB · ƒ /books/list 5.37 kB · ƒ /cart 9.5 kB
+                                    ƒ /help · ƒ /license · ƒ /privacy (footer pages)
 
 > npm run test:e2e                  # read-only, local
-Running 160 tests using 1 worker
-160 passed (8.0m)
+Running 181 tests using 1 worker
+181 passed (5.0m)
   e2e/admin-books.spec.ts          25  page opens · search / category / sort / paging / no match · loading / empty / error states ·
                                        details · not found · form rules and messages · server error under its field ·
                                        edit pre-filled · header and footer links · phone card title · sort ellipsis · banner styles
-  e2e/book-catalog.spec.ts          9  catalog on the API (Homework 1 regression)
+  e2e/book-catalog.spec.ts         10  catalog on the API (Homework 1 regression) + cards line up across a row
+  e2e/site-pages.spec.ts            5  footer Help / License / Privacy pages, no dead footer links
   e2e/catalog-navigation.spec.ts    8
   e2e/cart.spec.ts                  8  incl. a deleted book leaving the cart
-  e2e/responsive.spec.ts          110  every screen and state at 1920 … 375 (+1440): no sideways scroll, screenshot saved
+  e2e/responsive.spec.ts          125  every screen and state at 1920 … 375 (+1440): no sideways scroll, screenshot saved
 
 > npm run test:e2e:mutation        # create / edit / delete, local API
 Running 4 tests using 1 worker
-4 passed (19.9s)
+4 passed (19.6s)
   create → list → details → edit → delete (main flow) · duplicate ISBN from the server · double-click creates one book ·
   delete from details removes it from the list and the cart
 
@@ -167,7 +173,7 @@ Running 4 tests using 1 worker
 
 - **No login:** anyone with the link can add, edit or delete books (the Roles test area is "not applicable" for the
   homework). The demo API is public on purpose.
-- **Free hosting:** the API sleeps when idle (first load up to a minute) and Render's free database expires after a
+- **Free hosting:** the API is kept awake by a 10-minute ping; if it does sleep, a cold start takes a few minutes and Render's free database expires after a
   limited time, after which it would need a new one.
 - Cover is a URL (an `https://` link or one of the app's `/assets/images/` files), not an upload.
 - No undo after delete (the API has no soft delete); the dialog says "This cannot be undone."
