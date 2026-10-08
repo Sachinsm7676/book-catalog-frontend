@@ -46,7 +46,7 @@ or **Negative** (it refuses what it should refuse). Areas follow the training's 
 | MB-31 | Negative | Verify that too-short title and author are refused | — | Title "A", Author "B", submit | "Title must be 2 to 120 characters." · "Author must be 2 to 80 characters." | admin-books: formats |
 | MB-32 | Negative | Verify that a title over 120 characters is refused | — | Paste 121 characters, submit | "Title must be 2 to 120 characters." | Manual |
 | MB-33 | Negative | Verify that an ISBN that is not 13 digits is refused | — | ISBN "978123456789" (12), then "97812345678ab" | "ISBN must be exactly 13 digits." | admin-books: formats |
-| MB-34 | Negative | Verify that a future published date is refused | — | Published "2099-01-01" | "Published date cannot be in the future." | admin-books: formats |
+| MB-34 | Negative | Verify that a future published date cannot be entered | — | Open the Published on calendar, go to next month | Every future day is disabled; the field cannot be typed into. The API still refuses a future date with "Published date cannot be in the future." (API test) | admin-books: calendar |
 | MB-35 | Negative | Verify that a cover URL with another scheme is refused | — | Cover "ftp://example.com/c.jpg" | "Cover URL must start with http://, https:// or /assets/images/." | admin-books: formats |
 | MB-36 | Negative | Verify that a description over 1,000 characters is refused | — | 1,001 characters | Counter turns red "1,001 / 1,000 characters"; "Description can be at most 1,000 characters." | admin-books: formats |
 | MB-37 | Negative | Verify that a price above ₹99,999.99 is refused | — | Price 100000 | "Price must be between ₹0 and ₹99,999.99." | Manual |
@@ -114,3 +114,4 @@ or **Negative** (it refuses what it should refuse). Areas follow the training's 
 | MB-92 | Positive | Verify that the footer Privacy link opens the Privacy page | — | Click "Privacy" in the footer | `/privacy`, h1 "Privacy", explains the cart stays in the browser and added books are public | site-pages |
 | MB-93 | Negative | Verify that no footer link is a dead "#" link | — | Read the footer links on any page | Exactly: Manage books, Help, License, Privacy, each to a real page | site-pages |
 | MB-94 | Positive | Verify that the footer pages do not scroll sideways | Widths 1920 / 1440 / 1366 / 768 / 375 | Open each page | Page never wider than the viewport | responsive (`help-*.png`, `license-*.png`, `privacy-*.png`) |
+| MB-95 | Positive | Verify that the Published on calendar opens once and stays open | Edge / Chrome | Click the date field | The calendar opens once, without flicker, and stays open; Today fills today's date as dd-mm-yyyy; Clear empties the field | admin-books: calendar |

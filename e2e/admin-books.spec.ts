@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, BOOKS_API, EMPTY_PAGE, SEEDED, apiGetBook, failBooksApi, hangBooksApi, stubBooksList } from "./helpers";
+import { ADMIN, BOOKS_API, EMPTY_PAGE, SEEDED, apiGetBook, failBooksApi, hangBooksApi, isoToDisplayDate, stubBooksList, todayIso } from "./helpers";
 
 // Read-only tests of the manage-books feature (Homework 2). Nothing here creates, changes or deletes data:
 // write paths are in admin-books.mutation.spec.ts. Server answers that cannot be produced safely (500, empty
@@ -209,12 +209,11 @@ test.describe("Manage books: form validation (nothing is saved)", () => {
     await expect(banner).toHaveCSS("justify-content", "flex-start");
   });
 
-  test("too short, wrong format and future values get the same messages as the API", async ({ page }) => {
+  test("too short and wrong-format values get the same messages as the API", async ({ page }) => {
     await page.goto(ADMIN.create);
     await page.locator("#book-title").fill("A");
     await page.locator("#book-author").fill("B");
     await page.locator("#book-isbn").fill("978123456789");
-    await page.locator("#book-publishedAt").fill("2099-01-01");
     await page.locator("#book-coverUrl").fill("ftp://example.com/cover.jpg");
     await page.locator("#book-description").fill("x".repeat(1001));
     await page.getByTestId("submit-book").click();
@@ -222,9 +221,33 @@ test.describe("Manage books: form validation (nothing is saved)", () => {
     await expect(page.getByTestId("error-title")).toHaveText("Title must be 2 to 120 characters.");
     await expect(page.getByTestId("error-author")).toHaveText("Author must be 2 to 80 characters.");
     await expect(page.getByTestId("error-isbn")).toHaveText("ISBN must be exactly 13 digits.");
-    await expect(page.getByTestId("error-publishedAt")).toHaveText("Published date cannot be in the future.");
     await expect(page.getByTestId("error-coverUrl")).toHaveText("Cover URL must start with http://, https:// or /assets/images/.");
     await expect(page.getByTestId("error-description")).toHaveText("Description can be at most 1,000 characters.");
+  });
+
+  test("the published date is picked from a calendar that opens once and stays open; future days are disabled", async ({ page }) => {
+    await page.goto(ADMIN.create);
+    const input = page.locator("#book-publishedAt");
+    await expect(input).toHaveAttribute("readonly", "");
+    await expect(input).toHaveAttribute("placeholder", "dd-mm-yyyy");
+    await input.click();
+    const panel = page.locator(".form-date-panel");
+    await expect(panel).toBeVisible();
+    // The reported flicker: the panel must not close and reopen right after it appears
+    await page.waitForTimeout(800);
+    await expect(panel).toBeVisible();
+    // Next month is entirely in the future, so every day there is disabled
+    await panel.locator(".p-datepicker-next").click();
+    const days = panel.locator("table td:not(.p-datepicker-other-month) > span");
+    expect(await days.count()).toBeGreaterThan(27);
+    expect(await panel.locator("table td:not(.p-datepicker-other-month) > span:not(.p-disabled)").count()).toBe(0);
+    // Back to this month: Today fills the field in the display format and closes the panel; Clear empties it again
+    await panel.locator(".p-datepicker-prev").click();
+    await panel.getByRole("button", { name: "Today" }).click();
+    await expect(input).toHaveValue(isoToDisplayDate(todayIso()));
+    await input.click();
+    await panel.getByRole("button", { name: "Clear" }).click();
+    await expect(input).toHaveValue("");
   });
 
   test("a field's error clears as soon as it is corrected", async ({ page }) => {
@@ -275,7 +298,7 @@ test.describe("Manage books: form validation (nothing is saved)", () => {
     await expect(page.locator("#book-author")).toHaveValue(book.author);
     await expect(page.locator("#book-priceInr")).toHaveValue("999");
     await expect(page.locator("#book-isbn")).toHaveValue(book.isbn ?? "");
-    await expect(page.locator("#book-publishedAt")).toHaveValue(book.publishedAt ?? "");
+    await expect(page.locator("#book-publishedAt")).toHaveValue(isoToDisplayDate(book.publishedAt));
     await page.getByRole("link", { name: "Cancel" }).click();
     await expect(page).toHaveURL(ADMIN.details(SEEDED.id));
   });

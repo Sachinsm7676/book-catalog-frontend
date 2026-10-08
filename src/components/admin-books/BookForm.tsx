@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Message } from "primereact/message";
 import { classNames } from "primereact/utils";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Icon } from "@/components/common/Icon";
 import { BOOK_CATEGORIES, BOOK_LIMITS } from "@/constants/books-admin";
 import type { ApiError } from "@/types/api";
@@ -22,7 +23,7 @@ import {
   type BookFormErrors,
   type BookFormValues,
 } from "@/utils/book-rules";
-import { formatCount, todayIsoDate } from "@/utils/format";
+import { endOfLocalDay, formatCount, isoDateToLocalDate, toIsoDate, todayIsoDate } from "@/utils/format";
 
 /** Banner text when the browser's own checks stop the form; the API uses the same sentence for a 400. */
 const FIX_FIELDS_MESSAGE = "Please correct the highlighted fields.";
@@ -59,6 +60,9 @@ export function BookForm({ initialValues, submitLabel, pendingLabel, pending, ap
   const [banner, setBanner] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const today = todayIsoDate();
+  // Stable Date objects for the date picker, so a re-render of the form does not reset an open calendar
+  const latestPublishDate = useMemo(() => endOfLocalDay(today), [today]);
+  const publishedDate = useMemo(() => isoDateToLocalDate(values.publishedAt), [values.publishedAt]);
 
   const focusField = (field: BookField) => {
     const element = formRef.current?.querySelector<HTMLElement>(`#${fieldId(field)}`);
@@ -254,15 +258,27 @@ export function BookForm({ initialValues, submitLabel, pendingLabel, pending, ap
         {field(
           "publishedAt",
           "Published on",
-          <InputText
-            {...a11y("publishedAt")}
-            className="form-input"
-            type="date"
-            max={today}
-            value={values.publishedAt}
-            onChange={(event) => update("publishedAt", event.target.value)}
-            onBlur={() => checkOnLeave("publishedAt")}
-          />,
+          // PrimeReact Calendar instead of <input type="date">: the browser's own picker flickered as it opened in
+          // Edge/Chrome on Windows. Pick-only (no typing), future days disabled, Today / Clear like the native one.
+          <div className="form-date">
+            <Calendar
+              inputId={fieldId("publishedAt")}
+              name="publishedAt"
+              value={publishedDate}
+              onChange={(event) => update("publishedAt", event.value instanceof Date ? toIsoDate(event.value) : "")}
+              onHide={() => checkOnLeave("publishedAt")}
+              dateFormat="dd-mm-yy"
+              placeholder="dd-mm-yyyy"
+              maxDate={latestPublishDate}
+              readOnlyInput
+              showButtonBar
+              appendTo="self"
+              inputClassName="form-input"
+              panelClassName="form-date-panel"
+              pt={{ input: { root: { "aria-invalid": a11y("publishedAt")["aria-invalid"], "aria-describedby": a11y("publishedAt")["aria-describedby"] } } }}
+            />
+            <Icon name="calendar-grey" size="sm" className="form-date-icon" />
+          </div>,
           { hint: HINTED.publishedAt },
         )}
 

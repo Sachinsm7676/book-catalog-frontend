@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN, API_URL, SEEDED, apiDeleteBook, apiGetBook, apiDeleteTestBooks } from "./helpers";
+import { ADMIN, API_URL, SEEDED, apiDeleteBook, apiGetBook, apiDeleteTestBooks, pickDate } from "./helpers";
 
 // Create / edit / delete against the real API (npm run test:e2e:mutation). Every book is created by the test
 // itself with a unique title and removed in afterEach, so the seeded 24 are never touched.
@@ -39,7 +39,7 @@ test("create → appears in the list and the catalog → edit → change shows �
   // Create
   await page.goto(ADMIN.create);
   await fillBookForm(page, { title, author: "Test Author", category: "Java", price: "1249.5" });
-  await page.locator("#book-publishedAt").fill("2026-01-15");
+  await pickDate(page, "2026-01-15");
   await page.locator("#book-description").fill("Written by the Playwright mutation test.");
   await page.getByTestId("submit-book").click();
 

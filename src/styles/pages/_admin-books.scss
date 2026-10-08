@@ -686,6 +686,104 @@
   }
 }
 
+// ---- Published on: PrimeReact Calendar, pick-only, calendar icon inside the field as in the Figma frame ----
+.form-date {
+  position: relative;
+  width: 100%;
+
+  .p-calendar {
+    display: flex;
+    width: 100%;
+  }
+
+  .form-input.p-inputtext {
+    padding-right: calc(#{$space-4} * 2 + #{$space-4});
+    cursor: pointer;
+  }
+}
+
+.form-date-icon {
+  position: absolute;
+  top: 50%;
+  right: $space-4;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+// The picker panel in the DevShelf tokens (PrimeReact's theme would bring its own indigo and shadow)
+.form-date-panel.p-datepicker {
+  padding: $space-2;
+  border: $border-width solid token("grey-b2");
+  border-radius: $radius-md;
+  background: token("white-b1");
+  box-shadow: $shadow-card;
+  color: token("black-b1");
+  font-family: $font-family-base;
+  font-size: $font-size-xs;
+
+  .p-datepicker-header {
+    padding: $space-2;
+    border-bottom: $border-width solid token("grey-b2");
+    background: token("white-b1");
+    color: token("black-b1");
+  }
+
+  .p-datepicker-title button {
+    color: token("black-b1");
+    font-weight: $font-weight-semibold;
+  }
+
+  table td > span.p-highlight,
+  .p-monthpicker-month.p-highlight,
+  .p-yearpicker-year.p-highlight {
+    background: token("indigo-b1");
+    color: token("white-b1");
+  }
+
+  table td.p-datepicker-today > span {
+    background: token("indigo-b2");
+    color: token("indigo-b1");
+  }
+
+  table td > span.p-disabled {
+    color: token("grey-b5");
+    cursor: default;
+  }
+
+  table td > span:focus-visible,
+  .p-datepicker-buttonbar .p-button:focus-visible {
+    @include focus-ring;
+
+    box-shadow: none;
+  }
+
+  .p-datepicker-buttonbar {
+    padding-top: $space-2;
+    border-top: $border-width solid token("grey-b2");
+
+    // Today / Clear are quiet text buttons (the site's filled button style would hide their indigo labels)
+    .p-button {
+      min-height: 0;
+      padding: $space-2 $space-3;
+      border-color: transparent;
+      background: transparent;
+      color: token("indigo-b1");
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+
+      .p-button-label {
+        color: inherit;
+      }
+
+      &:enabled:hover {
+        border-color: transparent;
+        background: token("indigo-b2");
+        color: token("indigo-b1");
+      }
+    }
+  }
+}
+
 .form-textarea.p-inputtextarea {
   min-height: $textarea-min-height;
   padding-block: $space-3;

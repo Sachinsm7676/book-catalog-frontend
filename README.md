@@ -11,6 +11,7 @@ with test cases, Playwright tests and a QA build report.** Submitted by Sachin S
 | Backend repo | [github.com/Sachinsm7676/devshelf-api](https://github.com/Sachinsm7676/devshelf-api) · branch `main` (Spring Boot 3.5, Java 21, PostgreSQL, Flyway) |
 | Design | [Figma — DevShelf](https://www.figma.com/design/GmMGwepcgacGOKSFaf5elg/Untitled?node-id=0-1): page 1 = Homework 1 frames, page "HW2 — Manage books" = Homework 2 frames (1440 / 768 / 375, loading / empty / errors) |
 | Test cases | [docs/test-cases.md](docs/test-cases.md) — WM QA Template format, every area of the Step 7 table |
+| Playwright HTML report | [book-catalog-frontend-rouge.vercel.app/qa/playwright-report/](https://book-catalog-frontend-rouge.vercel.app/qa/playwright-report/index.html) — the run against the deployed site (read-only + mutation projects), kept in [public/qa/playwright-report/](public/qa/playwright-report/) |
 | QA build report | [docs/qa-build-report-hw2.md](docs/qa-build-report-hw2.md) — the 10 parts from Step 8 |
 | Design check | [docs/design-check-hw2.md](docs/design-check-hw2.md) — 13 designer questions with the answers used |
 | Design vs build | [docs/design/side-by-side/](docs/design/side-by-side/) (Figma left, deployed build right) · Figma exports in [docs/design/figma/](docs/design/figma/) |
@@ -43,6 +44,8 @@ the Homework 1 catalog sells. The catalog and cart now read them from the API; t
 - **Filters live in the URL** (`?q=&category=&sort=&page=`), so a view can be shared and the back button works.
 - **"Manage books" link:** in the header from 768 px up; in the footer below that (no room beside the cart on a phone —
   design question Q2).
+- **Published on** is a calendar (PrimeReact, in the DevShelf tokens): pick-only so a date cannot be mistyped, future days
+  disabled, *Today* / *Clear*. It replaced the browser's date picker, which flickered when opening in Edge on Windows.
 - **Footer pages:** *Help* (how to use the site), *License* (a demo, sample data, links to both repos) and *Privacy*
   (no sign-in or tracking; the cart stays in the browser; added books are public) at `/help`, `/license`, `/privacy`.
 - **Catalog cards line up:** price and *Add to cart* sit at the bottom of each card, level across a row even when a

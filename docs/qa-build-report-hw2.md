@@ -41,6 +41,7 @@ a cold start takes a few minutes. Open the API link first and wait for it to ans
 | 5 | The cover URL help text did not mention `/assets/images/` paths, which the API accepts | Help text updated |
 | 6 | Catalog: when one title in a row wrapped to two lines, that card's price and *Add to cart* sat lower than its neighbours' (found in review, `?sort=rating`) | Cards fill the row height and the price + button sit at the bottom, so they line up across every row |
 | 7 | Footer *Help*, *License* and *Privacy* were placeholder `#` links: clicking them did nothing | Three short pages: `/help` (how to use the site), `/license` (demo content, links to both repos), `/privacy` (cart kept in the browser only, added books are public, no tracking) |
+| 8 | *Published on*: the browser's own date picker flickered twice as it opened (Edge on Windows, found in review) | Replaced with the PrimeReact calendar in the DevShelf tokens: opens once, pick-only (no mistyped dates), future days disabled, *Today* / *Clear*, calendar icon inside the field as in Figma. The API still refuses a future date |
 
 Each fix has an automated test (see part 9).
 
@@ -74,7 +75,9 @@ Nothing. The API starts with 24 seeded books.
 12. Double-click *Add book* / *Delete book* quickly: only one book is created / one request is sent.
 13. On the catalog sorted by rating (`/books/list?sort=rating`), check every row: prices and *Add to cart* buttons line up.
 14. Click *Help*, *License* and *Privacy* in the footer: each opens its own page; the License page links both repositories.
-15. Repeat 1, 5, 10 and 14 at 1920, 1366, 768 and 375 wide (browser responsive mode): no sideways scrolling, cards on a phone,
+15. On Add book, click *Published on*: the calendar opens once and stays open; next month's days are all disabled;
+    *Today* fills today's date (dd-mm-yyyy) and *Clear* empties it.
+16. Repeat 1, 5, 10, 14 and 15 at 1920, 1366, 768 and 375 wide (browser responsive mode): no sideways scrolling, cards on a phone,
     "Manage books" in the footer under 768.
 
 ## 8. Known issues and what is not covered

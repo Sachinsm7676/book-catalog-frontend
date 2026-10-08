@@ -36,9 +36,30 @@ export const formatShortDate = (isoDate: string | null): string | null =>
 /** "2026-10-07T09:30:00Z" -> "Oct 7, 2026, 3:00 PM" in the viewer's time zone */
 export const formatDateTime = (instant: string): string => dateTime.format(new Date(instant));
 
-/** Today in the viewer's calendar as YYYY-MM-DD (for the date input's max and the "not in the future" rule) */
+/** A calendar day as YYYY-MM-DD, read in the viewer's time zone (never via UTC, which can shift the day) */
+export function toIsoDate(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+/** Today in the viewer's calendar as YYYY-MM-DD (for the "not in the future" rule) */
 export function todayIsoDate(now: Date = new Date()): string {
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${now.getFullYear()}-${month}-${day}`;
+  return toIsoDate(now);
+}
+
+/** "2026-01-15" -> local midnight on 15 Jan 2026 for the date picker; null when empty or not a real date */
+export function isoDateToLocalDate(iso: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return toIsoDate(date) === iso ? date : null;
+}
+
+/** The last moment of a YYYY-MM-DD day, locally: the date picker's upper limit (its Today button hides once now is past it) */
+export function endOfLocalDay(iso: string): Date | undefined {
+  const date = isoDateToLocalDate(iso);
+  if (!date) return undefined;
+  date.setHours(23, 59, 59, 999);
+  return date;
 }

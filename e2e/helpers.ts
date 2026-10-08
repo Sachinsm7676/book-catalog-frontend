@@ -59,3 +59,29 @@ export async function hangBooksApi(page: Page) {
 }
 
 export const EMPTY_PAGE = { list: [], pageNumber: 1, size: 10, totalElements: 0, totalPages: 1 };
+
+/** Today in this machine's calendar as YYYY-MM-DD (the browser under test runs in the same time zone) */
+export function todayIso(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+/** "2025-11-04" -> "04-11-2025", the format the Published on field shows; "" stays "" */
+export function isoToDisplayDate(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const [year, month, day] = iso.split("-");
+  return `${day}-${month}-${year}`;
+}
+
+const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Pick a date in the Published on calendar the way a user does: year, then month, then day */
+export async function pickDate(page: Page, iso: string): Promise<void> {
+  const [year, month, day] = iso.split("-").map(Number);
+  await page.locator("#book-publishedAt").click();
+  const panel = page.locator(".form-date-panel");
+  await panel.locator(".p-datepicker-year").click();
+  await panel.locator(".p-yearpicker-year", { hasText: String(year) }).click();
+  await panel.locator(".p-monthpicker-month", { hasText: MONTHS_SHORT[month - 1] }).click();
+  await panel.locator("table td:not(.p-datepicker-other-month) > span").getByText(String(day), { exact: true }).click();
+}

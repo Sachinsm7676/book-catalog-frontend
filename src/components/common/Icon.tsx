@@ -14,7 +14,8 @@ export type IconName =
   | "book-open-white"
   | "trash-indigo"
   | "arrow-right-white"
-  | "lock-grey";
+  | "lock-grey"
+  | "calendar-grey";
 
 interface IconProps {
   name: IconName;
