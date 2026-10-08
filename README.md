@@ -131,7 +131,19 @@ Tests run: 88, Failures: 0, Errors: 0, Skipped: 0
   DatabaseUrlEnvironmentPostProcessorTest 3
 ```
 
-LIVE_RESULTS_PLACEHOLDER
+**Against the deployed site** (Vercel build of `899e462`, API on Render), 8 Oct 2026 06:20 IST:
+
+```
+> PLAYWRIGHT_BASE_URL=https://book-catalog-frontend-rouge.vercel.app E2E_API_URL=https://devshelf-api.onrender.com
+> npm run test:e2e
+Running 160 tests using 1 worker
+160 passed (5.4m)
+
+> npm run test:e2e:mutation        # same variables: create → edit → delete on the live demo, each test deletes what it made
+Running 4 tests using 1 worker
+4 passed (24.8s)
+  afterwards: GET /api/v1/books?q=E2E → 0 books left; 24 books in the live catalog
+```
 
 ## Explaining the code (review map)
 
