@@ -7,7 +7,7 @@ Format: WM | Report, the 10 parts of the training's Step 8. Written as if handin
 | | |
 |---|---|
 | Frontend | `book-catalog-frontend` · branch `main` as of 8 Oct 13:00 IST (app code from `8e730c1`; the commits after it add the published Playwright report, docs and test changes only) · [book-catalog-frontend-rouge.vercel.app](https://book-catalog-frontend-rouge.vercel.app) |
-| Backend | `devshelf-api` · branch `main` · commit `7fa2ab8` (application code unchanged since `0d8430d`; later commits are README and the keep-awake job) · [devshelf-api.onrender.com](https://devshelf-api.onrender.com/api/v1/books) · [Swagger](https://devshelf-api.onrender.com/swagger-ui/index.html) |
+| Backend | `devshelf-api` · branch `main` · commit `d28766d` (adds the self-ping that keeps the free instance awake; the books API itself is unchanged since `0d8430d`) · [devshelf-api.onrender.com](https://devshelf-api.onrender.com/api/v1/books) · [Swagger](https://devshelf-api.onrender.com/swagger-ui/index.html) |
 | Date | 8 Oct 2026 |
 | Start here | [/admin/books/list](https://book-catalog-frontend-rouge.vercel.app/admin/books/list) |
 
